@@ -1,5 +1,7 @@
 import type { BackgroundAnimation, MountedAnimation } from '../domain/background-animation';
 import type { AnimationPreferenceStore } from '../domain/animation-preference';
+import type { AnimationSettingsStore } from '../domain/animation-settings-store';
+import { isConfigurable, type AnimationSettingParam } from '../domain/animation-settings';
 
 export interface AnimationCatalogEntry<TName extends string = string> {
   name: TName;
@@ -19,14 +21,16 @@ export interface AnimationCatalog<TName extends string = string> {
 
 /**
  * Orchestrates mounting a BackgroundAnimation onto a canvas, switching
- * between registered animations, and pausing/resuming playback, persisting
- * the animation choice via the given AnimationPreferenceStore port.
- * Framework-agnostic (no Astro/DOM event wiring beyond the canvas element
- * itself) — components/scripts wire this to click handlers, they don't
- * reimplement the switching/pause logic.
+ * between registered animations, pausing/resuming playback, and — for
+ * animations implementing ConfigurableAnimation — reading/writing tunable
+ * settings (e.g. speed), persisting both the animation choice and its
+ * settings via the given store ports. Framework-agnostic (no Astro/DOM
+ * event wiring beyond the canvas element itself) — components/scripts wire
+ * this to click/input handlers, they don't reimplement any of this logic.
  */
 export class BackgroundAnimationController<TName extends string = string> {
   private mounted: MountedAnimation | null = null;
+  private mountedAnimation: BackgroundAnimation | null = null;
   private current: TName;
   private playing = true;
 
@@ -34,6 +38,7 @@ export class BackgroundAnimationController<TName extends string = string> {
     private readonly canvas: HTMLCanvasElement,
     private readonly catalog: AnimationCatalog<TName>,
     private readonly preferenceStore: AnimationPreferenceStore,
+    private readonly settingsStore: AnimationSettingsStore,
     defaultName: TName
   ) {
     const stored = this.preferenceStore.get();
@@ -50,6 +55,28 @@ export class BackgroundAnimationController<TName extends string = string> {
 
   isPlaying(): boolean {
     return this.playing;
+  }
+
+  /** Settings schema for the CURRENTLY MOUNTED animation, or [] if it isn't configurable. */
+  getSettingsSchema(): AnimationSettingParam[] {
+    if (this.mountedAnimation && isConfigurable(this.mountedAnimation)) {
+      return this.mountedAnimation.getSettingsSchema();
+    }
+    return [];
+  }
+
+  getSetting(key: string): number {
+    if (this.mountedAnimation && isConfigurable(this.mountedAnimation)) {
+      return this.mountedAnimation.getSetting(key);
+    }
+    return 0;
+  }
+
+  setSetting(key: string, value: number): void {
+    if (this.mountedAnimation && isConfigurable(this.mountedAnimation)) {
+      this.mountedAnimation.setSetting(key, value);
+      this.settingsStore.set(this.current, key, value);
+    }
   }
 
   start(): void {
@@ -83,7 +110,18 @@ export class BackgroundAnimationController<TName extends string = string> {
   private mount(name: TName): void {
     this.mounted?.unmount();
     const animation = this.catalog.create(name);
+
+    if (isConfigurable(animation)) {
+      for (const param of animation.getSettingsSchema()) {
+        const stored = this.settingsStore.get(name, param.key);
+        if (stored !== null) {
+          animation.setSetting(param.key, stored);
+        }
+      }
+    }
+
     this.mounted = animation.mount(this.canvas);
+    this.mountedAnimation = animation;
     this.current = name;
     this.preferenceStore.set(name);
     if (!this.playing) {

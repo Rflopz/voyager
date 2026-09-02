@@ -2,6 +2,7 @@
 import AnimationOptionButton from '../atoms/AnimationOptionButton.astro';
 import PlayPauseButton from '../atoms/PlayPauseButton.astro';
 import RocketIcon from '../atoms/icons/RocketIcon.astro';
+import AnimationSettingsPanel from './AnimationSettingsPanel.astro';
 import { listAnimations } from '../../infrastructure/animations/registry';
 import { ACTIVE_BACKGROUND_ANIMATION } from '../../config/site';
 
@@ -25,6 +26,7 @@ const animations = listAnimations();
 					<AnimationOptionButton name={a.name} label={a.label} active={a.name === ACTIVE_BACKGROUND_ANIMATION} />
 				))}
 			</div>
+			<AnimationSettingsPanel />
 		</div>
 	</div>
 	<PlayPauseButton />
@@ -35,15 +37,27 @@ const animations = listAnimations();
 	const canvas = document.getElementById('background-animation') as HTMLCanvasElement | null;
 	const menu = document.getElementById('animation-switcher-menu');
 	const playPauseButton = document.getElementById('animation-playpause-toggle');
+	const settingsPanel = document.getElementById('animation-settings-panel');
+	const settingRowTemplate = document.getElementById('animation-setting-row-template') as HTMLTemplateElement | null;
 
 	if (canvas && menu) {
 		const controller = getBackgroundAnimationController(canvas);
 
 		const optionButtons = menu.querySelectorAll<HTMLButtonElement>('[data-animation-option]');
+		const gearButtons = menu.querySelectorAll<HTMLButtonElement>('[data-animation-settings-trigger]');
+
 		const syncActiveState = () => {
 			const current = controller.getCurrent();
 			optionButtons.forEach((btn) => {
 				btn.setAttribute('aria-pressed', String(btn.dataset.animationOption === current));
+			});
+			// Only the currently mounted animation can be configured live —
+			// show its gear, hide the others (a not-yet-mounted adapter has
+			// no in-memory state for the panel to read/write anyway).
+			gearButtons.forEach((btn) => {
+				const isCurrent = btn.dataset.animationSettingsTrigger === current;
+				const hasSettings = isCurrent && controller.getSettingsSchema().length > 0;
+				btn.hidden = !hasSettings;
 			});
 		};
 
@@ -52,7 +66,55 @@ const animations = listAnimations();
 				const name = btn.dataset.animationOption;
 				if (!name) return;
 				controller.switchTo(name as Parameters<typeof controller.switchTo>[0]);
+				closeSettingsPanel();
 				syncActiveState();
+			});
+		});
+
+		function closeSettingsPanel() {
+			settingsPanel?.classList.add('hidden');
+			if (settingsPanel) settingsPanel.innerHTML = '';
+		}
+
+		function openSettingsPanel() {
+			if (!settingsPanel || !settingRowTemplate) return;
+			settingsPanel.innerHTML = '';
+			const schema = controller.getSettingsSchema();
+			for (const param of schema) {
+				const row = settingRowTemplate.content.cloneNode(true) as DocumentFragment;
+				const labelEl = row.querySelector<HTMLElement>('[data-setting-label]');
+				const valueEl = row.querySelector<HTMLElement>('[data-setting-value]');
+				const inputEl = row.querySelector<HTMLInputElement>('[data-setting-input]');
+				if (!labelEl || !valueEl || !inputEl) continue;
+
+				labelEl.textContent = param.label;
+				inputEl.min = String(param.min);
+				inputEl.max = String(param.max);
+				inputEl.step = String(param.step);
+				const current = controller.getSetting(param.key);
+				inputEl.value = String(current);
+				valueEl.textContent = current.toFixed(2);
+
+				inputEl.addEventListener('input', () => {
+					const value = Number(inputEl.value);
+					controller.setSetting(param.key, value);
+					valueEl.textContent = value.toFixed(2);
+				});
+
+				settingsPanel.appendChild(row);
+			}
+			settingsPanel.classList.remove('hidden');
+		}
+
+		gearButtons.forEach((btn) => {
+			btn.addEventListener('click', (event) => {
+				event.stopPropagation();
+				const isOpen = settingsPanel && !settingsPanel.classList.contains('hidden');
+				if (isOpen) {
+					closeSettingsPanel();
+				} else {
+					openSettingsPanel();
+				}
 			});
 		});
 

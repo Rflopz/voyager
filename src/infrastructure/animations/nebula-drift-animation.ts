@@ -1,4 +1,5 @@
 import type { BackgroundAnimation, MountedAnimation } from '../../domain/background-animation';
+import type { AnimationSettingParam, ConfigurableAnimation } from '../../domain/animation-settings';
 
 interface Blob {
   x: number;
@@ -16,8 +17,11 @@ interface Blob {
  * drifting slowly across the background with a gentle pulse, like faint
  * nebula gas. No stars, no motion-sickness camera push — just gentle color
  * movement. Alternative aesthetic to StarfieldAnimation for comparison.
+ *
+ * Implements ConfigurableAnimation to expose a tunable "Speed" setting via
+ * the gear-icon settings panel (components/molecules/AnimationSettingsPanel).
  */
-export class NebulaDriftAnimation implements BackgroundAnimation {
+export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAnimation {
   private static readonly BG_COLOR = '#0b0e14';
   private static readonly BLOB_COLORS = [
     'rgba(108, 123, 209, 0.22)', // desaturated indigo
@@ -25,9 +29,26 @@ export class NebulaDriftAnimation implements BackgroundAnimation {
     'rgba(80, 100, 160, 0.16)', // dusty blue-gray
   ];
   // px/frame at 60fps — visibly drifting without being distracting
-  private static readonly SPEED = 0.6;
+  private static readonly DEFAULT_SPEED = 0.6;
   private static readonly PULSE_SPEED = 0.008;
   private static readonly PULSE_AMOUNT = 0.15; // +/- 15% radius breathing
+
+  private speed = NebulaDriftAnimation.DEFAULT_SPEED;
+
+  getSettingsSchema(): AnimationSettingParam[] {
+    return [
+      { key: 'speed', label: 'Speed', min: 0.1, max: 2, step: 0.05, defaultValue: NebulaDriftAnimation.DEFAULT_SPEED },
+    ];
+  }
+
+  getSetting(key: string): number {
+    if (key === 'speed') return this.speed;
+    return 0;
+  }
+
+  setSetting(key: string, value: number): void {
+    if (key === 'speed') this.speed = value;
+  }
 
   mount(canvas: HTMLCanvasElement): MountedAnimation {
     const ctx = canvas.getContext('2d');
@@ -46,8 +67,8 @@ export class NebulaDriftAnimation implements BackgroundAnimation {
         y: Math.random() * height,
         radius: baseRadius,
         baseRadius,
-        vx: Math.cos(angle) * NebulaDriftAnimation.SPEED,
-        vy: Math.sin(angle) * NebulaDriftAnimation.SPEED,
+        vx: Math.cos(angle),
+        vy: Math.sin(angle),
         color,
         pulsePhase: i * 2.1,
       };
@@ -78,8 +99,8 @@ export class NebulaDriftAnimation implements BackgroundAnimation {
 
       for (const blob of blobs) {
         if (!prefersReducedMotion) {
-          blob.x += blob.vx;
-          blob.y += blob.vy;
+          blob.x += blob.vx * this.speed;
+          blob.y += blob.vy * this.speed;
           const margin = blob.baseRadius * 0.3;
           if (blob.x < -margin) blob.vx = Math.abs(blob.vx);
           if (blob.x > width + margin) blob.vx = -Math.abs(blob.vx);

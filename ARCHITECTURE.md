@@ -11,13 +11,20 @@ src/domain/            Pure types + port interfaces. No I/O, no framework.
   cv-repository.ts        CvRepository port — how content gets loaded
   background-animation.ts BackgroundAnimation port — how a bg animation mounts/cleans up
   animation-preference.ts AnimationPreferenceStore port — how the chosen animation persists
+  animation-settings.ts   ConfigurableAnimation port (optional capability, Interface
+                          Segregation) — per-animation tunable numeric params (e.g. speed)
+  animation-settings-store.ts
+                          AnimationSettingsStore port — how tunable setting values persist
 
 src/application/       Use cases. Depend only on domain/ ports.
   get-cv.ts               getCv(repository) — the one CV use case
   background-animation-controller.ts
                           BackgroundAnimationController — mounts/switches animations,
                           persists choice via an AnimationPreferenceStore, generic
-                          over an AnimationCatalog shape (list/create/isValidName)
+                          over an AnimationCatalog shape (list/create/isValidName);
+                          also exposes getSettingsSchema()/getSetting()/setSetting()
+                          for the currently mounted animation when it implements
+                          ConfigurableAnimation, persisting values via AnimationSettingsStore
 
 src/infrastructure/    Adapters implementing domain/ ports. Framework/IO-aware.
   content/
@@ -28,6 +35,10 @@ src/infrastructure/    Adapters implementing domain/ ports. Framework/IO-aware.
     registry.ts               name -> {label, factory} map; listAnimations()/createAnimation()/isAnimationName()
     local-storage-animation-preference-store.ts
                               localStorage adapter for AnimationPreferenceStore
+    local-storage-animation-settings-store.ts
+                              localStorage adapter for AnimationSettingsStore, keyed by
+                              (animation name, setting key) so different animations'
+                              settings never collide
 
 src/config/             Composition root + feature switches. The ONLY files
                         that wire a concrete adapter into a use case/port.
@@ -93,6 +104,27 @@ play/pause state is session-only (resets to playing on reload).
 
 Currently registered: `starfield` (default), `nebula-drift` (alternative,
 still under evaluation).
+
+## Adding a tunable setting to an animation (the "gear icon" capability)
+
+Any animation can expose tunable numeric parameters (currently: Speed on
+both `starfield` and `nebula-drift`) without changing any UI code:
+
+1. In the adapter, `implements BackgroundAnimation, ConfigurableAnimation`
+   (see `domain/animation-settings.ts`).
+2. Implement `getSettingsSchema()` returning an `AnimationSettingParam[]`
+   (key, label, min, max, step, defaultValue) — one entry per slider.
+3. Implement `getSetting(key)` / `setSetting(key, value)` reading/writing
+   whatever internal field(s) the animation's render loop already uses
+   (e.g. `this.speed`).
+
+That's it — `AnimationSwitcher.astro` only shows a gear icon next to the
+row for whichever animation is CURRENTLY MOUNTED and reports a non-empty
+schema (`isConfigurable()` type guard); clicking it reads the schema and
+renders one `<input type="range">` per param entirely generically, with no
+per-animation UI code anywhere. Values are persisted per
+(animation name, setting key) via `AnimationSettingsStore` and restored
+automatically the next time that animation is mounted.
 
 ## Swapping the CV content source
 

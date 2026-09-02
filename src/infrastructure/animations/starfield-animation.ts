@@ -1,4 +1,5 @@
 import type { BackgroundAnimation, MountedAnimation } from '../../domain/background-animation';
+import type { AnimationSettingParam, ConfigurableAnimation } from '../../domain/animation-settings';
 
 interface Star {
   x: number;
@@ -9,12 +10,32 @@ interface Star {
 /**
  * "Starfield" adapter — a slow-drifting field of soft points, camera
  * pushing forward through space. Muted opacity, no neon.
+ *
+ * Implements ConfigurableAnimation to expose a tunable "Speed" setting via
+ * the gear-icon settings panel (components/molecules/AnimationSettingsPanel).
  */
-export class StarfieldAnimation implements BackgroundAnimation {
+export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnimation {
   private static readonly STAR_COUNT = 220;
-  private static readonly SPEED = 0.4;
+  private static readonly DEFAULT_SPEED = 0.4;
   private static readonly BG_COLOR = '#0b0e14';
   private static readonly STAR_COLOR = '228, 231, 238'; // rgb triplet
+
+  private speed = StarfieldAnimation.DEFAULT_SPEED;
+
+  getSettingsSchema(): AnimationSettingParam[] {
+    return [
+      { key: 'speed', label: 'Speed', min: 0.05, max: 2, step: 0.05, defaultValue: StarfieldAnimation.DEFAULT_SPEED },
+    ];
+  }
+
+  getSetting(key: string): number {
+    if (key === 'speed') return this.speed;
+    return 0;
+  }
+
+  setSetting(key: string, value: number): void {
+    if (key === 'speed') this.speed = value;
+  }
 
   mount(canvas: HTMLCanvasElement): MountedAnimation {
     const ctx = canvas.getContext('2d');
@@ -56,7 +77,7 @@ export class StarfieldAnimation implements BackgroundAnimation {
 
       for (const star of stars) {
         if (!prefersReducedMotion) {
-          star.z -= StarfieldAnimation.SPEED;
+          star.z -= this.speed;
           if (star.z <= 0) star.z = width;
         }
         const k = 128 / star.z;

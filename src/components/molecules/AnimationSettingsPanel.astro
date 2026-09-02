@@ -1,0 +1,26 @@
+---
+/**
+ * Reusable settings popover for the currently active/configurable
+ * background animation. Content (which sliders appear) is built entirely
+ * client-side from BackgroundAnimationController.getSettingsSchema(), so
+ * this component has zero knowledge of any specific animation — any
+ * adapter implementing ConfigurableAnimation (see
+ * domain/animation-settings.ts) automatically gets a working panel here
+ * with no changes to this file.
+ */
+---
+<div
+	id="animation-settings-panel"
+	role="dialog"
+	aria-label="Animation settings"
+	class="animation-settings-panel absolute right-full top-0 mr-2 hidden w-48 rounded-lg border border-space-border bg-space-surface/95 p-3 backdrop-blur"
+></div>
+<template id="animation-setting-row-template">
+	<label class="mb-2 block last:mb-0">
+		<span class="mb-1 flex items-center justify-between text-xs text-space-muted">
+			<span data-setting-label></span>
+			<span data-setting-value class="text-space-accent"></span>
+		</span>
+		<input type="range" data-setting-input class="w-full accent-space-accent" />
+	</label>
+</template>
