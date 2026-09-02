@@ -12,7 +12,7 @@ const { name, label, active } = Astro.props;
 		type="button"
 		data-animation-option={name}
 		aria-pressed={active}
-		class="min-w-0 flex-1 rounded px-3 py-1.5 text-left text-sm text-space-text transition-colors hover:bg-space-border/60 aria-pressed:text-space-accent"
+		class="min-w-0 flex-1 cursor-pointer rounded px-3 py-1.5 text-left text-sm text-space-text transition-colors hover:bg-space-border/60 aria-pressed:text-space-accent"
 	>
 		{label}
 	</button>
@@ -20,7 +20,7 @@ const { name, label, active } = Astro.props;
 		type="button"
 		data-animation-settings-trigger={name}
 		aria-label={`${label} settings`}
-		class="shrink-0 rounded p-1.5 text-space-muted transition-colors hover:bg-space-border/60 hover:text-space-text"
+		class="shrink-0 cursor-pointer rounded p-1.5 text-space-muted transition-colors hover:bg-space-border/60 hover:text-space-text"
 		hidden
 	>
 		<GearIcon class="h-3.5 w-3.5" />
