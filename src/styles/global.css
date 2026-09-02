@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  /* Subtle space palette — muted, desaturated, no neon */
+  --color-space-bg: #0b0e14;       /* near-black navy, not pure black */
+  --color-space-surface: #131824;  /* card/panel background */
+  --color-space-border: #232b3d;
+  --color-space-text: #e4e7ee;     /* soft off-white, not pure white */
+  --color-space-muted: #9aa3b8;    /* lightened slightly from spec for WCAG AA contrast on bg */
+  --color-space-accent: #6c7bd1;   /* desaturated indigo / dusty blue */
+  --color-space-accent2: #9b7fc7;  /* muted violet, secondary accent */
+
+  --font-display: "Space Grotesk", sans-serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--color-space-bg);
+  color: var(--color-space-text);
+  font-family: var(--font-sans);
+}
