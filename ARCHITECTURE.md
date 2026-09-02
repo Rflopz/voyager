@@ -72,11 +72,19 @@ data already resolved by `config/` (composition root) via page props.
 Nothing else changes — not the atom that renders the `<canvas>`, not the
 switcher UI, not the layout, not any page. The top-right controls
 (`components/molecules/AnimationSwitcher.astro`) are a rocket icon button
-(hover reveals the animation list, generated from the registry) plus a
-separate play/pause icon button that pauses/resumes the currently mounted
-animation in place (freezes the canvas, doesn't tear it down). Choice
-persists via `localStorage` (`LocalStorageAnimationPreferenceStore`) across
-reloads; play/pause state is session-only (resets to playing on reload).
+that grows into a single continuous panel on hover (width and height both
+animate — CSS grid-template-rows 0fr->1fr plus a max-width transition —
+revealing the animation list generated from the registry underneath the
+same button, so the trigger and the list read as one object, not two
+separate floating pieces) plus a separate matching-size play/pause icon
+button beside it that pauses/resumes the currently mounted animation in
+place (freezes the canvas, doesn't tear it down). Because the list lives
+inside the same bordered shape as the trigger with no gap between them,
+moving the pointer from the button down into the list never leaves the
+hoverable area — the panel stays open while hovering the list itself, no
+click-to-pin needed. Choice persists via `localStorage`
+(`LocalStorageAnimationPreferenceStore`) across reloads; play/pause state
+is session-only (resets to playing on reload).
 
 Currently registered: `starfield` (default), `nebula-drift` (alternative,
 still under evaluation).

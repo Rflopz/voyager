@@ -7,26 +7,24 @@ import { ACTIVE_BACKGROUND_ANIMATION } from '../../config/site';
 
 const animations = listAnimations();
 ---
-<div class="fixed right-6 top-6 z-10 flex items-center gap-2">
-	<div class="group relative">
+<div class="fixed right-6 top-6 z-10 flex items-start gap-2">
+	<div class="animation-switcher overflow-hidden rounded-lg border border-space-border bg-space-surface/90 backdrop-blur">
 		<button
 			type="button"
 			aria-haspopup="true"
 			aria-expanded="false"
 			aria-label="Change background animation"
 			id="animation-switcher-trigger"
-			class="rounded border border-space-border bg-space-surface/80 p-2 text-space-muted backdrop-blur transition-colors hover:text-space-text"
+			class="flex h-9 w-9 items-center justify-center text-space-muted transition-colors hover:text-space-text"
 		>
-			<RocketIcon />
+			<RocketIcon class="h-5 w-5 shrink-0" />
 		</button>
-		<div
-			id="animation-switcher-menu"
-			role="menu"
-			class="pointer-events-none absolute right-0 top-full mt-2 w-44 rounded border border-space-border bg-space-surface/95 p-1 opacity-0 backdrop-blur transition-opacity duration-150 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100"
-		>
-			{animations.map((a) => (
-				<AnimationOptionButton name={a.name} label={a.label} active={a.name === ACTIVE_BACKGROUND_ANIMATION} />
-			))}
+		<div id="animation-switcher-menu" role="menu" class="animation-switcher__menu">
+			<div class="animation-switcher__menu-inner w-44 border-t border-space-border/70 p-1">
+				{animations.map((a) => (
+					<AnimationOptionButton name={a.name} label={a.label} active={a.name === ACTIVE_BACKGROUND_ANIMATION} />
+				))}
+			</div>
 		</div>
 	</div>
 	<PlayPauseButton />
@@ -81,3 +79,46 @@ const animations = listAnimations();
 		}
 	}
 </script>
+<style>
+	/*
+	 * Trigger + menu are ONE bordered/rounded shape (.animation-switcher),
+	 * not two separate elements — the menu sits directly under the button
+	 * inside the same box, so there's no gap for the pointer to "fall out
+	 * of" moving from button to menu. That's what keeps the menu open on
+	 * hover instead of requiring a click to keep it pinned.
+	 *
+	 * Width AND height both grow on hover: width via max-width transition
+	 * (animatable because both endpoints are fixed values, unlike "auto"),
+	 * height via a 0fr -> 1fr grid-template-rows transition (the only way
+	 * to animate toward an intrinsic/auto height in CSS).
+	 */
+	.animation-switcher {
+		max-width: 2.25rem; /* matches h-9 w-9 trigger button */
+		transition: max-width 260ms ease;
+	}
+
+	.animation-switcher:hover,
+	.animation-switcher:focus-within {
+		max-width: 11rem; /* matches menu-inner's w-44 */
+	}
+
+	.animation-switcher__menu {
+		display: grid;
+		grid-template-rows: 0fr;
+		opacity: 0;
+		transition:
+			grid-template-rows 220ms ease 40ms,
+			opacity 160ms ease 40ms;
+	}
+
+	.animation-switcher:hover .animation-switcher__menu,
+	.animation-switcher:focus-within .animation-switcher__menu {
+		grid-template-rows: 1fr;
+		opacity: 1;
+	}
+
+	.animation-switcher__menu-inner {
+		overflow: hidden;
+		min-height: 0;
+	}
+</style>
