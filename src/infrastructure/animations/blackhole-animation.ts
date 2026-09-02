@@ -4,7 +4,7 @@ import type { AnimationSettingParam, ConfigurableAnimation } from '../../domain/
 import { NumericSettings } from '../../domain/animations/numeric-settings';
 import { prefersReducedMotion } from './motion-preference';
 import { isMobileViewport, MOBILE_BREAKPOINT_PX } from './viewport';
-import { createBlackholeUniforms, createBlackholeScene } from './blackhole/shader';
+import { createBlackholeUniforms, createBlackholeScene, type BlackholeUniforms } from './blackhole/shader';
 import { MeteorField } from './blackhole/meteor-field';
 import { FilmGrain } from './blackhole/film-grain';
 
@@ -62,6 +62,14 @@ export class BlackholeAnimation implements BackgroundAnimation, ConfigurableAnim
   ]);
 
   private grain: FilmGrain | null = null;
+  // Reference to the currently-mounted shader's live uniforms, so
+  // setSetting('dustLevel', ...) can push the change to the GPU
+  // immediately. Unlike meteorSpeed/meteorDensity (read fresh from
+  // `this.settings` every frame inside meteors.update()) and grainLevel
+  // (forwarded straight to the FilmGrain instance), the shader uniform
+  // object is only ever constructed once per mount — without this
+  // reference, dustLevel changes would silently do nothing after mount.
+  private activeUniforms: BlackholeUniforms | null = null;
 
   getSettingsSchema(): AnimationSettingParam[] {
     return this.settings.getSettingsSchema();
@@ -75,6 +83,7 @@ export class BlackholeAnimation implements BackgroundAnimation, ConfigurableAnim
     this.settings.setSetting(key, value);
 
     if (key === 'grainLevel') this.grain?.setIntensity(value);
+    if (key === 'dustLevel' && this.activeUniforms) this.activeUniforms.uDustLevel.value = value;
   }
 
   mount(canvas: HTMLCanvasElement): MountedAnimation {
@@ -160,6 +169,7 @@ export class BlackholeAnimation implements BackgroundAnimation, ConfigurableAnim
     const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const bhU = createBlackholeUniforms(mobile, this.settings.getSetting('dustLevel'));
     const bhScene = createBlackholeScene(bhU);
+    this.activeUniforms = bhU;
 
     let base = { x: mobile ? 0.5 : 0.78, y: mobile ? 0.72 : 0.55 };
     let px = 0;
@@ -289,6 +299,7 @@ export class BlackholeAnimation implements BackgroundAnimation, ConfigurableAnim
         if (raf) cancelAnimationFrame(raf);
 
         this.grain?.dispose();
+        this.activeUniforms = null;
         window.removeEventListener('resize', resize);
         window.removeEventListener('scroll', onScroll);
         window.removeEventListener('pointermove', onPointer);
