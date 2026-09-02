@@ -32,6 +32,7 @@ import { isMobileViewport, MOBILE_BREAKPOINT_PX } from './viewport';
 export class BlackholeAnimation implements BackgroundAnimation {
   mount(canvas: HTMLCanvasElement): MountedAnimation {
     const parent = canvas.parentElement;
+
     if (!parent) {
       return { pause() {}, resume() {}, unmount() {} };
     }
@@ -75,22 +76,28 @@ export class BlackholeAnimation implements BackgroundAnimation {
     // ---- grain (plain 2D, coarse buffer stretched by CSS) ----
     const grainCtx = grainCanvas.getContext('2d');
     let grainTimer: ReturnType<typeof setInterval> | null = null;
+
     if (grainCtx) {
       const gw = 420;
       const gh = 280;
       grainCanvas.width = gw;
       grainCanvas.height = gh;
       const img = grainCtx.createImageData(gw, gh);
+
       const drawGrain = () => {
         const d = img.data;
+
         for (let i = 0; i < d.length; i += 4) {
           const v = (110 + Math.random() * 145) | 0;
           d[i] = d[i + 1] = d[i + 2] = v;
           d[i + 3] = 255;
         }
+
         grainCtx.putImageData(img, 0, 0);
       };
+
       drawGrain();
+
       if (!reduced) grainTimer = setInterval(drawGrain, 83);
     }
 
@@ -223,6 +230,7 @@ void main(){
 
     const sizeMeteors = () => {
       if (!mctx) return;
+
       meteorCanvas.width = Math.round(window.innerWidth * mdpr);
       meteorCanvas.height = Math.round(window.innerHeight * mdpr);
       mu = meteorCanvas.height;
@@ -230,6 +238,7 @@ void main(){
 
     // ---- three.js scene (black hole quad only — no star field) ----
     let webglRenderer: THREE.WebGLRenderer;
+
     try {
       webglRenderer = new THREE.WebGLRenderer({
         canvas,
@@ -250,6 +259,7 @@ void main(){
         },
       };
     }
+
     renderer = webglRenderer;
     renderer.setClearColor(0x000000, 0);
     renderer.autoClear = false;
@@ -309,20 +319,25 @@ void main(){
       base = { x: mobile ? 0.5 : 0.78, y: mobile ? 0.72 : 0.55 };
       sizeMeteors();
       applyScroll();
+
       if (reduced || paused) frame(0);
     };
 
     const onScroll = () => {
       if (!reduced) applyScroll();
     };
+
     const onPointer = (e: PointerEvent) => {
       if (reduced || mobile) return;
+
       tx = (e.clientX / window.innerWidth - 0.5) * 2;
       ty = (e.clientY / window.innerHeight - 0.5) * 2;
     };
+
     const onVis = () => {
       if (document.hidden) {
         if (raf) cancelAnimationFrame(raf);
+
         raf = null;
       } else if (reduced) {
         frame(0);
@@ -367,12 +382,14 @@ void main(){
 
     const updateMeteors = (dt: number) => {
       if (!mctx) return;
+
       const ctx = mctx;
       const u = mu;
       const asp = window.innerWidth / window.innerHeight;
       ctx.clearRect(0, 0, meteorCanvas.width, meteorCanvas.height);
 
       nextMeteor -= dt;
+
       if (nextMeteor <= 0 && meteors.length < 2) {
         spawnMeteor();
         nextMeteor = (mobile ? 7 : 4.5) + Math.random() * 5;
@@ -389,6 +406,7 @@ void main(){
       for (let i = meteors.length - 1; i >= 0; i--) {
         const m = meteors[i];
         m.t += dt;
+
         if (!m.eaten) {
           for (let k = 0; k < 2; k++) {
             const h = dt / 2;
@@ -401,11 +419,15 @@ void main(){
             m.x += m.vx * h;
             m.y += m.vy * h;
           }
+
           m.pts.push(m.x, m.y);
+
           if (m.pts.length > 140) m.pts.splice(0, 2);
+
           const dx = m.x - cx;
           const dy = m.y - cy;
           const r = Math.hypot(dx, dy);
+
           if (r < CAPTURE) {
             m.eaten = 1;
             m.r = r;
@@ -421,14 +443,18 @@ void main(){
           m.x = cx + Math.cos(m.ang) * m.r;
           m.y = cy + Math.sin(m.ang) * m.r;
           m.pts.push(m.x, m.y);
+
           if (m.pts.length > 140) m.pts.splice(0, 2);
           if (m.r <= HORIZON) m.gone = (m.gone || 0) + dt * 3.2;
           if (m.gone) {
             m.alpha = Math.max(0, 1 - m.gone);
+
             if (m.pts.length > 2) m.pts.splice(0, 6);
           }
         }
+
         const off = m.x < -0.55 || m.x > asp + 0.55 || m.y < -0.55 || m.y > 1.55;
+
         if (!off) m.seen = 1;
         if ((off && m.seen && !m.eaten) || m.t > 22 || m.alpha <= 0 || (m.gone && m.pts.length <= 2)) {
           meteors.splice(i, 1);
@@ -436,10 +462,13 @@ void main(){
         }
 
         const n = m.pts.length / 2;
+
         for (let j = 1; j < n; j++) {
           const f = j / n;
           const a = f * f * 0.85 * m.alpha;
+
           if (a < 0.004) continue;
+
           ctx.beginPath();
           ctx.moveTo(m.pts[(j - 1) * 2] * u, m.pts[(j - 1) * 2 + 1] * u);
           ctx.lineTo(m.pts[j * 2] * u, m.pts[j * 2 + 1] * u);
@@ -451,6 +480,7 @@ void main(){
               : 'rgba(255,240,214,' + a + ')';
           ctx.stroke();
         }
+
         if (!m.gone && n > 1) {
           const hx = m.pts[(n - 1) * 2] * u;
           const hy = m.pts[(n - 1) * 2 + 1] * u;
@@ -463,6 +493,7 @@ void main(){
           ctx.fill();
         }
       }
+
       ctx.globalCompositeOperation = 'source-over';
     };
 
@@ -474,12 +505,14 @@ void main(){
       py += (ty - py) * Math.min(1, dt * 2.4);
       bhU.uParallax.value.set(px * capBH, -py * capBH * 0.7);
       render();
+
       if (dt > 0) updateMeteors(dt);
     }
 
     function loop() {
       raf = requestAnimationFrame(() => {
         if (dead || paused) return;
+
         const now = performance.now();
         const dt = Math.min(0.05, (now - last) * 0.001);
         last = now;
@@ -489,6 +522,7 @@ void main(){
     }
 
     resize();
+
     if (!reduced) meteorCanvas.style.opacity = '1';
 
     if (reduced) {
@@ -501,7 +535,9 @@ void main(){
     return {
       pause() {
         paused = true;
+
         if (raf) cancelAnimationFrame(raf);
+
         raf = null;
       },
       resume() {
@@ -513,8 +549,10 @@ void main(){
       },
       unmount() {
         dead = true;
+
         if (raf) cancelAnimationFrame(raf);
         if (grainTimer) clearInterval(grainTimer);
+
         window.removeEventListener('resize', resize);
         window.removeEventListener('scroll', onScroll);
         window.removeEventListener('pointermove', onPointer);

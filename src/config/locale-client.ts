@@ -15,5 +15,6 @@ export function getLocaleController(): LocaleController {
   if (!controllerInstance) {
     controllerInstance = new LocaleController(new LocalePreferenceStorage(new LocalStorageAdapter()), { es });
   }
+
   return controllerInstance;
 }

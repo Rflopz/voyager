@@ -52,6 +52,21 @@ export default tseslint.config(
       // no-default-export if this ever drifts.)
       '@typescript-eslint/no-explicit-any': 'warn',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
+      // Readability spacing: a blank line before AND after any if/else
+      // block, and before/after any block-bodied function (this also
+      // covers `const foo = () => { ... }` arrow functions, since their
+      // last token is the closing `}` of the block body — same
+      // "block-like" bucket ESLint uses for if/function/class/try/etc).
+      // Arrow functions with an expression body (`const x = () => y`,
+      // no braces) aren't block-like and are NOT covered by this rule.
+      'padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', prev: '*', next: ['if', 'block-like'] },
+        { blankLine: 'always', prev: ['if', 'block-like'], next: '*' },
+        // Chained if/else-if/else and immediately-following statements in
+        // the same block don't need blank lines between each other member.
+        { blankLine: 'any', prev: 'if', next: 'if' },
+      ],
     },
   },
 

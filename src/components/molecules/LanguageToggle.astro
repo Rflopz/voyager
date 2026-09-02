@@ -37,6 +37,7 @@
   const english: Record<string, string> = {};
   nodes.forEach((n) => {
     const key = n.getAttribute('data-i18n');
+
     if (key) english[key] = n.textContent ?? '';
   });
 
@@ -46,14 +47,18 @@
   function applyLocale(locale: Locale, immediate = false) {
     const dict = controller.getDictionary(locale);
     const content = document.getElementById('page-content');
+
     const swap = () => {
       nodes.forEach((n) => {
         const key = n.getAttribute('data-i18n');
+
         if (!key) return;
+
         n.textContent = dict?.[key] ?? english[key];
       });
       document.documentElement.lang = locale;
     };
+
     if (immediate || !content) {
       swap();
     } else {
@@ -64,6 +69,7 @@
         content.style.opacity = '1';
       }, 200);
     }
+
     enBtn?.style.setProperty('opacity', locale === 'en' ? '1' : '0.35');
     esBtn?.style.setProperty('opacity', locale === 'es' ? '1' : '0.35');
   }

@@ -46,6 +46,7 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
 
   mount(canvas: HTMLCanvasElement): MountedAnimation {
     const ctx = canvas.getContext('2d');
+
     if (!ctx) {
       return { pause() {}, resume() {}, unmount() {} };
     }
@@ -65,6 +66,7 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     };
+
     window.addEventListener('resize', resize);
 
     let rafId: number | null = null;
@@ -72,6 +74,7 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
 
     const frame = () => {
       if (paused) return;
+
       ctx.clearRect(0, 0, width, height);
       ctx.save();
       ctx.translate(width / 2, height / 2);
@@ -79,8 +82,10 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
       for (const star of stars) {
         if (!motion.reduced) {
           star.z -= this.speedSetting.value;
+
           if (star.z <= 0) star.z = width;
         }
+
         const k = 128 / star.z;
         const sx = star.x * k;
         const sy = star.y * k;
@@ -92,15 +97,19 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
         ctx.arc(sx, sy, Math.max(size, 0.3), 0, Math.PI * 2);
         ctx.fill();
       }
+
       ctx.restore();
       rafId = requestAnimationFrame(frame);
     };
+
     rafId = requestAnimationFrame(frame);
 
     return {
       pause() {
         paused = true;
+
         if (rafId !== null) cancelAnimationFrame(rafId);
+
         rafId = null;
       },
       resume() {
@@ -111,7 +120,9 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
       },
       unmount() {
         paused = true;
+
         if (rafId !== null) cancelAnimationFrame(rafId);
+
         window.removeEventListener('resize', resize);
         motion.dispose();
       },

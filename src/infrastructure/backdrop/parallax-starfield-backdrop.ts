@@ -22,6 +22,7 @@ export class ParallaxStarfieldBackdrop implements BackgroundAnimation {
     let mobile = isMobileViewport();
 
     let renderer: THREE.WebGLRenderer;
+
     try {
       renderer = new THREE.WebGLRenderer({
         canvas,
@@ -34,6 +35,7 @@ export class ParallaxStarfieldBackdrop implements BackgroundAnimation {
     } catch {
       return { pause() {}, resume() {}, unmount() {} };
     }
+
     renderer.setClearColor(0x050506, 1);
     renderer.autoClear = true;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -85,6 +87,7 @@ void main(){
     const phase = new Float32Array(count);
     const layer = new Float32Array(count);
     const tint = new Float32Array(count * 3);
+
     for (let i = 0; i < count; i++) {
       pos[i * 3] = Math.random() * 2 - 1;
       pos[i * 3 + 1] = Math.random() * 2 - 1;
@@ -98,6 +101,7 @@ void main(){
       tint[i * 3 + 1] = 1.0 - warm * 0.09;
       tint[i * 3 + 2] = 1.0 - warm * 0.23;
     }
+
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     geometry.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
@@ -143,16 +147,21 @@ void main(){
       const h = window.innerHeight;
       mobile = w < MOBILE_BREAKPOINT_PX;
       renderer.setSize(w, h, false);
+
       if (reduced) frame(0);
     };
+
     const onPointer = (e: PointerEvent) => {
       if (reduced || mobile) return;
+
       tx = (e.clientX / window.innerWidth - 0.5) * 2;
       ty = (e.clientY / window.innerHeight - 0.5) * 2;
     };
+
     const onVis = () => {
       if (document.hidden) {
         if (raf) cancelAnimationFrame(raf);
+
         raf = null;
       } else if (reduced) {
         frame(0);
@@ -179,6 +188,7 @@ void main(){
     function loop() {
       raf = requestAnimationFrame(() => {
         if (dead || paused) return;
+
         const now = performance.now();
         const dt = Math.min(0.05, (now - last) * 0.001);
         last = now;
@@ -188,6 +198,7 @@ void main(){
     }
 
     resize();
+
     if (reduced) {
       frame(0);
     } else {
@@ -198,7 +209,9 @@ void main(){
     return {
       pause() {
         paused = true;
+
         if (raf) cancelAnimationFrame(raf);
+
         raf = null;
       },
       resume() {
@@ -210,7 +223,9 @@ void main(){
       },
       unmount() {
         dead = true;
+
         if (raf) cancelAnimationFrame(raf);
+
         window.removeEventListener('resize', resize);
         window.removeEventListener('pointermove', onPointer);
         document.removeEventListener('visibilitychange', onVis);

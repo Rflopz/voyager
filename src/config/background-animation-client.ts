@@ -33,6 +33,7 @@ export function getBackgroundAnimationController(container: HTMLElement) {
       ACTIVE_BACKGROUND_ANIMATION
     );
   }
+
   return controllerInstance;
 }
 

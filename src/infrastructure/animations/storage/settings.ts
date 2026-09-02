@@ -17,7 +17,9 @@ export class AnimationSettingsStorage implements AnimationSettingsStore {
 
   get(animationName: string, key: string): number | null {
     const raw = this.storage.get(storageKey(animationName, key));
+
     if (raw === null) return null;
+
     const value = Number(raw);
     return Number.isFinite(value) ? value : null;
   }

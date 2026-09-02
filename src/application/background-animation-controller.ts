@@ -71,6 +71,7 @@ export class BackgroundAnimationController<TName extends string = string> {
     if (this.mountedAnimation && isConfigurable(this.mountedAnimation)) {
       return this.mountedAnimation.getSettingsSchema();
     }
+
     return [];
   }
 
@@ -78,6 +79,7 @@ export class BackgroundAnimationController<TName extends string = string> {
     if (this.mountedAnimation && isConfigurable(this.mountedAnimation)) {
       return this.mountedAnimation.getSetting(key);
     }
+
     return 0;
   }
 
@@ -94,6 +96,7 @@ export class BackgroundAnimationController<TName extends string = string> {
 
   switchTo(name: TName): void {
     if (name === this.current && this.mounted) return;
+
     this.mount(name);
   }
 
@@ -113,11 +116,13 @@ export class BackgroundAnimationController<TName extends string = string> {
     } else {
       this.resume();
     }
+
     return this.playing;
   }
 
   private mount(name: TName): void {
     this.mounted?.unmount();
+
     if (this.currentCanvas) {
       this.currentCanvas.remove();
       this.currentCanvas = null;
@@ -133,6 +138,7 @@ export class BackgroundAnimationController<TName extends string = string> {
     if (isConfigurable(animation)) {
       for (const param of animation.getSettingsSchema()) {
         const stored = this.settingsStore.get(name, param.key);
+
         if (stored !== null) {
           animation.setSetting(param.key, stored);
         }
@@ -143,6 +149,7 @@ export class BackgroundAnimationController<TName extends string = string> {
     this.mountedAnimation = animation;
     this.current = name;
     this.preferenceStore.set(name);
+
     if (!this.playing) {
       this.mounted.pause();
     }

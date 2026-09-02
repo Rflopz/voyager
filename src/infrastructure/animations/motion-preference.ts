@@ -18,9 +18,11 @@ export interface ReducedMotionWatcher {
 export function watchReducedMotion(): ReducedMotionWatcher {
   const query = window.matchMedia('(prefers-reduced-motion: reduce)');
   let reduced = query.matches;
+
   const onChange = (e: MediaQueryListEvent) => {
     reduced = e.matches;
   };
+
   query.addEventListener('change', onChange);
   return {
     get reduced() {

@@ -18,6 +18,7 @@
   import { ParallaxStarfieldBackdrop } from '../../infrastructure/backdrop/parallax-starfield-backdrop';
 
   const canvas = document.getElementById('stars-backdrop') as HTMLCanvasElement | null;
+
   if (canvas) {
     new ParallaxStarfieldBackdrop().mount(canvas);
   }

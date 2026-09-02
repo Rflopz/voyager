@@ -59,6 +59,7 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
 
   mount(canvas: HTMLCanvasElement): MountedAnimation {
     const ctx = canvas.getContext('2d');
+
     if (!ctx) {
       return { pause() {}, resume() {}, unmount() {} };
     }
@@ -87,6 +88,7 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     };
+
     window.addEventListener('resize', resize);
 
     let rafId: number | null = null;
@@ -95,6 +97,7 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
 
     const frame = () => {
       if (paused) return;
+
       tick += 1;
       ctx.clearRect(0, 0, width, height);
 
@@ -103,6 +106,7 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
           blob.x += blob.vx * this.speedSetting.value;
           blob.y += blob.vy * this.speedSetting.value;
           const margin = blob.baseRadius * 0.3;
+
           if (blob.x < -margin) blob.vx = Math.abs(blob.vx);
           if (blob.x > width + margin) blob.vx = -Math.abs(blob.vx);
           if (blob.y < -margin) blob.vy = Math.abs(blob.vy);
@@ -121,12 +125,15 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
 
       rafId = requestAnimationFrame(frame);
     };
+
     rafId = requestAnimationFrame(frame);
 
     return {
       pause() {
         paused = true;
+
         if (rafId !== null) cancelAnimationFrame(rafId);
+
         rafId = null;
       },
       resume() {
@@ -137,7 +144,9 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
       },
       unmount() {
         paused = true;
+
         if (rafId !== null) cancelAnimationFrame(rafId);
+
         window.removeEventListener('resize', resize);
         motion.dispose();
       },

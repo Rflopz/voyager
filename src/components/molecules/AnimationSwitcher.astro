@@ -60,7 +60,9 @@ const animations = listAnimations();
 		optionButtons.forEach((btn) => {
 			btn.addEventListener('click', () => {
 				const name = btn.dataset.animationOption;
+
 				if (!name) return;
+
 				controller.switchTo(name as Parameters<typeof controller.switchTo>[0]);
 				closeSettingsPanel();
 				syncActiveState();
@@ -69,18 +71,22 @@ const animations = listAnimations();
 
 		function closeSettingsPanel() {
 			settingsPanel?.classList.add('hidden');
+
 			if (settingsPanel) settingsPanel.innerHTML = '';
 		}
 
 		function openSettingsPanel() {
 			if (!settingsPanel || !settingRowTemplate) return;
+
 			settingsPanel.innerHTML = '';
 			const schema = controller.getSettingsSchema();
+
 			for (const param of schema) {
 				const row = settingRowTemplate.content.cloneNode(true) as DocumentFragment;
 				const labelEl = row.querySelector<HTMLElement>('[data-setting-label]');
 				const valueEl = row.querySelector<HTMLElement>('[data-setting-value]');
 				const inputEl = row.querySelector<HTMLInputElement>('[data-setting-input]');
+
 				if (!labelEl || !valueEl || !inputEl) continue;
 
 				labelEl.textContent = param.label;
@@ -99,6 +105,7 @@ const animations = listAnimations();
 
 				settingsPanel.appendChild(row);
 			}
+
 			settingsPanel.classList.remove('hidden');
 		}
 
@@ -106,6 +113,7 @@ const animations = listAnimations();
 			btn.addEventListener('click', (event) => {
 				event.stopPropagation();
 				const isOpen = settingsPanel && !settingsPanel.classList.contains('hidden');
+
 				if (isOpen) {
 					closeSettingsPanel();
 				} else {
