@@ -71,20 +71,21 @@ data already resolved by `config/` (composition root) via page props.
 
 Nothing else changes — not the atom that renders the `<canvas>`, not the
 switcher UI, not the layout, not any page. The top-right controls
-(`components/molecules/AnimationSwitcher.astro`) are a rocket icon button
-that grows into a single continuous panel on hover (width and height both
-animate — CSS grid-template-rows 0fr->1fr plus a max-width transition —
-revealing the animation list generated from the registry underneath the
-same button, so the trigger and the list read as one object, not two
-separate floating pieces) plus a separate matching-size play/pause icon
-button beside it that pauses/resumes the currently mounted animation in
-place (freezes the canvas, doesn't tear it down). Because the list lives
-inside the same bordered shape as the trigger with no gap between them,
-moving the pointer from the button down into the list never leaves the
-hoverable area — the panel stays open while hovering the list itself, no
-click-to-pin needed. Choice persists via `localStorage`
-(`LocalStorageAnimationPreferenceStore`) across reloads; play/pause state
-is session-only (resets to playing on reload).
+(`components/molecules/AnimationSwitcher.astro`) are a fixed-size (h-9 w-9)
+rocket icon button that never resizes, with the animation list as an
+absolutely-positioned dropdown anchored directly beneath it (zero gap,
+same background/blur/border color, no border between them while open) so
+it reads as one continuous shape rather than two separate boxes, plus a
+separate matching-size play/pause icon button beside it that stays in a
+fixed position regardless of whether the menu is open. The list generated
+from the registry grows open on hover (grid-template-rows 0fr->1fr) — since
+the dropdown sits directly under the button with no gap, moving the
+pointer from the button down into the list never exits the hoverable
+region, so the panel stays open while hovering the list itself, no
+click-to-pin needed, and pauses/resumes the currently mounted animation in
+place (freezes the canvas, doesn't tear it down). Choice persists via
+`localStorage` (`LocalStorageAnimationPreferenceStore`) across reloads;
+play/pause state is session-only (resets to playing on reload).
 
 Currently registered: `starfield` (default), `nebula-drift` (alternative,
 still under evaluation).
