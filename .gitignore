@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# synced CV data (generated from ~/Dev/Rflopz/Docs/rendercv/, not source of truth)
+src/data/cv.yaml
