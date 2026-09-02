@@ -1,0 +1,14 @@
+---
+import PlayIcon from './icons/PlayIcon.astro';
+import PauseIcon from './icons/PauseIcon.astro';
+---
+<button
+	type="button"
+	id="animation-playpause-toggle"
+	aria-pressed="false"
+	aria-label="Pause background animation"
+	class="rounded border border-space-border bg-space-surface/80 p-2 text-space-muted backdrop-blur transition-colors hover:text-space-text"
+>
+	<span class="block" data-state="playing"><PauseIcon /></span>
+	<span class="hidden" data-state="paused"><PlayIcon /></span>
+</button>

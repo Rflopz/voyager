@@ -62,18 +62,22 @@ data already resolved by `config/` (composition root) via page props.
 ## Swapping the background animation
 
 1. Add `src/infrastructure/animations/<name>-animation.ts` implementing
-   `BackgroundAnimation` (see `domain/background-animation.ts`).
+   `BackgroundAnimation` (see `domain/background-animation.ts` — `mount()`
+   returns a `MountedAnimation` with `pause()`/`resume()`/`unmount()`).
 2. Add one entry to `src/infrastructure/animations/registry.ts` (name, label, factory).
 3. (Optional) Change the default in `ACTIVE_BACKGROUND_ANIMATION`
    (`src/config/site.ts`) — not required for it to appear in the switcher,
    only to change what loads before any user choice/localStorage kicks in.
 
 Nothing else changes — not the atom that renders the `<canvas>`, not the
-switcher UI, not the layout, not any page. The on-page switcher
-(`components/molecules/AnimationSwitcher.astro`, hover the "Background ✦"
-button bottom-right) lists every registered animation automatically and
-lets a visitor swap live; their choice persists via `localStorage`
-(`LocalStorageAnimationPreferenceStore`) across reloads.
+switcher UI, not the layout, not any page. The top-right controls
+(`components/molecules/AnimationSwitcher.astro`) are an astronaut-helmet
+icon button (hover reveals the animation list, generated from the
+registry) plus a separate play/pause icon button that pauses/resumes the
+currently mounted animation in place (freezes the canvas, doesn't tear it
+down). Choice persists via `localStorage`
+(`LocalStorageAnimationPreferenceStore`) across reloads; play/pause state
+is session-only (resets to playing on reload).
 
 Currently registered: `starfield` (default), `nebula-drift` (alternative,
 still under evaluation).

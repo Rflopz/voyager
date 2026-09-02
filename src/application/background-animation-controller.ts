@@ -1,4 +1,4 @@
-import type { BackgroundAnimation } from '../domain/background-animation';
+import type { BackgroundAnimation, MountedAnimation } from '../domain/background-animation';
 import type { AnimationPreferenceStore } from '../domain/animation-preference';
 
 export interface AnimationCatalogEntry<TName extends string = string> {
@@ -18,15 +18,17 @@ export interface AnimationCatalog<TName extends string = string> {
 }
 
 /**
- * Orchestrates mounting a BackgroundAnimation onto a canvas and switching
- * between registered animations at runtime, persisting the choice via the
- * given AnimationPreferenceStore port. Framework-agnostic (no Astro/DOM
- * event wiring beyond the canvas element itself) — components/scripts wire
- * this to click handlers, they don't reimplement the switching logic.
+ * Orchestrates mounting a BackgroundAnimation onto a canvas, switching
+ * between registered animations, and pausing/resuming playback, persisting
+ * the animation choice via the given AnimationPreferenceStore port.
+ * Framework-agnostic (no Astro/DOM event wiring beyond the canvas element
+ * itself) — components/scripts wire this to click handlers, they don't
+ * reimplement the switching/pause logic.
  */
 export class BackgroundAnimationController<TName extends string = string> {
-  private cleanup: (() => void) | null = null;
+  private mounted: MountedAnimation | null = null;
   private current: TName;
+  private playing = true;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -46,20 +48,46 @@ export class BackgroundAnimationController<TName extends string = string> {
     return this.current;
   }
 
+  isPlaying(): boolean {
+    return this.playing;
+  }
+
   start(): void {
     this.mount(this.current);
   }
 
   switchTo(name: TName): void {
-    if (name === this.current && this.cleanup) return;
+    if (name === this.current && this.mounted) return;
     this.mount(name);
-    this.preferenceStore.set(name);
+  }
+
+  pause(): void {
+    this.mounted?.pause();
+    this.playing = false;
+  }
+
+  resume(): void {
+    this.mounted?.resume();
+    this.playing = true;
+  }
+
+  togglePlayback(): boolean {
+    if (this.playing) {
+      this.pause();
+    } else {
+      this.resume();
+    }
+    return this.playing;
   }
 
   private mount(name: TName): void {
-    this.cleanup?.();
+    this.mounted?.unmount();
     const animation = this.catalog.create(name);
-    this.cleanup = animation.mount(this.canvas);
+    this.mounted = animation.mount(this.canvas);
     this.current = name;
+    this.preferenceStore.set(name);
+    if (!this.playing) {
+      this.mounted.pause();
+    }
   }
 }

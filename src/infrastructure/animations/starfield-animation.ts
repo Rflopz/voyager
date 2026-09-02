@@ -1,4 +1,4 @@
-import type { BackgroundAnimation } from '../../domain/background-animation';
+import type { BackgroundAnimation, MountedAnimation } from '../../domain/background-animation';
 
 interface Star {
   x: number;
@@ -16,9 +16,11 @@ export class StarfieldAnimation implements BackgroundAnimation {
   private static readonly BG_COLOR = '#0b0e14';
   private static readonly STAR_COLOR = '228, 231, 238'; // rgb triplet
 
-  mount(canvas: HTMLCanvasElement): () => void {
+  mount(canvas: HTMLCanvasElement): MountedAnimation {
     const ctx = canvas.getContext('2d');
-    if (!ctx) return () => {};
+    if (!ctx) {
+      return { pause() {}, resume() {}, unmount() {} };
+    }
 
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
@@ -42,8 +44,11 @@ export class StarfieldAnimation implements BackgroundAnimation {
     };
     window.addEventListener('resize', resize);
 
-    let rafId: number;
+    let rafId: number | null = null;
+    let paused = false;
+
     const frame = () => {
+      if (paused) return;
       ctx.fillStyle = StarfieldAnimation.BG_COLOR;
       ctx.fillRect(0, 0, width, height);
       ctx.save();
@@ -68,12 +73,26 @@ export class StarfieldAnimation implements BackgroundAnimation {
       ctx.restore();
       rafId = requestAnimationFrame(frame);
     };
-    frame();
+    rafId = requestAnimationFrame(frame);
 
-    return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', resize);
-      motionQuery.removeEventListener('change', onMotionChange);
+    return {
+      pause() {
+        paused = true;
+        if (rafId !== null) cancelAnimationFrame(rafId);
+        rafId = null;
+      },
+      resume() {
+        if (paused) {
+          paused = false;
+          rafId = requestAnimationFrame(frame);
+        }
+      },
+      unmount() {
+        paused = true;
+        if (rafId !== null) cancelAnimationFrame(rafId);
+        window.removeEventListener('resize', resize);
+        motionQuery.removeEventListener('change', onMotionChange);
+      },
     };
   }
 }
