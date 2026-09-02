@@ -45,6 +45,7 @@
 
   function applyLocale(locale: Locale, immediate = false) {
     const dict = controller.getDictionary(locale);
+    const content = document.getElementById('page-content');
     const swap = () => {
       nodes.forEach((n) => {
         const key = n.getAttribute('data-i18n');
@@ -53,14 +54,14 @@
       });
       document.documentElement.lang = locale;
     };
-    if (immediate) {
+    if (immediate || !content) {
       swap();
     } else {
-      document.body.style.transition = 'opacity 200ms cubic-bezier(.2,.7,.2,1)';
-      document.body.style.opacity = '0';
+      content.style.transition = 'opacity 200ms cubic-bezier(.2,.7,.2,1)';
+      content.style.opacity = '0';
       setTimeout(() => {
         swap();
-        document.body.style.opacity = '1';
+        content.style.opacity = '1';
       }, 200);
     }
     enBtn?.style.setProperty('opacity', locale === 'en' ? '1' : '0.35');
