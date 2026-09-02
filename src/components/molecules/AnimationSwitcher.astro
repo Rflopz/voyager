@@ -1,7 +1,7 @@
 ---
 import AnimationOptionButton from '../atoms/AnimationOptionButton.astro';
 import PlayPauseButton from '../atoms/PlayPauseButton.astro';
-import AstronautHelmetIcon from '../atoms/icons/AstronautHelmetIcon.astro';
+import RocketIcon from '../atoms/icons/RocketIcon.astro';
 import { listAnimations } from '../../infrastructure/animations/registry';
 import { ACTIVE_BACKGROUND_ANIMATION } from '../../config/site';
 
@@ -17,7 +17,7 @@ const animations = listAnimations();
 			id="animation-switcher-trigger"
 			class="rounded border border-space-border bg-space-surface/80 p-2 text-space-muted backdrop-blur transition-colors hover:text-space-text"
 		>
-			<AstronautHelmetIcon />
+			<RocketIcon />
 		</button>
 		<div
 			id="animation-switcher-menu"

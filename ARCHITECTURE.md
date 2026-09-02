@@ -71,13 +71,12 @@ data already resolved by `config/` (composition root) via page props.
 
 Nothing else changes — not the atom that renders the `<canvas>`, not the
 switcher UI, not the layout, not any page. The top-right controls
-(`components/molecules/AnimationSwitcher.astro`) are an astronaut-helmet
-icon button (hover reveals the animation list, generated from the
-registry) plus a separate play/pause icon button that pauses/resumes the
-currently mounted animation in place (freezes the canvas, doesn't tear it
-down). Choice persists via `localStorage`
-(`LocalStorageAnimationPreferenceStore`) across reloads; play/pause state
-is session-only (resets to playing on reload).
+(`components/molecules/AnimationSwitcher.astro`) are a rocket icon button
+(hover reveals the animation list, generated from the registry) plus a
+separate play/pause icon button that pauses/resumes the currently mounted
+animation in place (freezes the canvas, doesn't tear it down). Choice
+persists via `localStorage` (`LocalStorageAnimationPreferenceStore`) across
+reloads; play/pause state is session-only (resets to playing on reload).
 
 Currently registered: `starfield` (default), `nebula-drift` (alternative,
 still under evaluation).
