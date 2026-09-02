@@ -20,7 +20,7 @@ const animations = listAnimations();
 			<RocketIcon class="h-4 w-4 shrink-0" />
 		</button>
 		<div id="animation-switcher-menu" role="menu" class="animation-switcher__menu absolute right-0 top-full w-44">
-			<div class="animation-switcher__menu-inner rounded-b-lg border border-t-0 border-space-border bg-space-surface/90 p-1 backdrop-blur">
+			<div class="animation-switcher__menu-inner rounded-bl-lg rounded-br-lg rounded-tl-lg border border-t-0 border-space-border bg-space-surface/90 p-1 backdrop-blur">
 				{animations.map((a) => (
 					<AnimationOptionButton name={a.name} label={a.label} active={a.name === ACTIVE_BACKGROUND_ANIMATION} />
 				))}
@@ -126,7 +126,29 @@ const animations = listAnimations();
 	}
 
 	.animation-switcher__menu-inner {
+		position: relative;
 		overflow: hidden;
 		min-height: 0;
+	}
+
+	/*
+	 * Draws the rounded top-left corner + a top border for the segment of
+	 * the menu's top edge that is NOT directly under the trigger button
+	 * (width = 100% - button width). The segment under the button (the
+	 * remaining 2.25rem on the right) gets no border/corner here — that's
+	 * exactly the part that should stay "open" and flush with the button
+	 * above it, closing the whole shape into one continuous outline.
+	 */
+	.animation-switcher__menu-inner::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: calc(100% - 2.25rem); /* 2.25rem = trigger button width (h-9 w-9) */
+		height: 0.5rem; /* matches rounded-lg radius so the curve completes */
+		border-top: 1px solid var(--color-space-border);
+		border-left: 1px solid var(--color-space-border);
+		border-top-left-radius: 0.5rem;
+		pointer-events: none;
 	}
 </style>

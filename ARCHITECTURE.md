@@ -75,8 +75,12 @@ switcher UI, not the layout, not any page. The top-right controls
 rocket icon button that never resizes, with the animation list as an
 absolutely-positioned dropdown anchored directly beneath it (zero gap,
 same background/blur/border color, no border between them while open) so
-it reads as one continuous shape rather than two separate boxes, plus a
-separate matching-size play/pause icon button beside it that stays in a
+it reads as one continuous shape rather than two separate boxes — the
+dropdown's top-left corner rounds like its other three corners, but the
+top-right segment (directly under the button) has no border/corner at
+all, so the outline closes into a single unbroken L-shape instead of
+looking like two stacked boxes — plus a separate matching-size play/pause
+icon button beside it that stays in a
 fixed position regardless of whether the menu is open. The list generated
 from the registry grows open on hover (grid-template-rows 0fr->1fr) — since
 the dropdown sits directly under the button with no gap, moving the
