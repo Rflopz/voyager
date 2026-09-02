@@ -18,6 +18,8 @@ pnpm run lint
 
 ESLint config is `eslint.config.js` (flat config, TS + Astro). `pnpm run lint:fix` auto-fixes what it can.
 
+`pnpm run lint` also runs `arch:check` (dependency-cruiser, config in `.dependency-cruiser.cjs`), which enforces the domain → application → infrastructure/config layering: `domain/` can't import `application/`/`infrastructure/`/`config/` or any node_modules package, and `application/` can't import `infrastructure/`/`config/`. Run it alone with `pnpm run arch:check`. Note: dependency-cruiser has no `.astro` parser, so `components/` import discipline is still enforced by code review only.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
