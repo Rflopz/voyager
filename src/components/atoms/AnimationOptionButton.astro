@@ -20,17 +20,9 @@ const { name, label, active } = Astro.props;
 		type="button"
 		data-animation-settings-trigger={name}
 		aria-label={`${label} settings`}
-		class="animation-option-row__gear shrink-0 rounded p-1.5 text-space-muted opacity-0 transition-opacity hover:bg-space-border/60 hover:text-space-text"
+		class="shrink-0 rounded p-1.5 text-space-muted transition-colors hover:bg-space-border/60 hover:text-space-text"
 		hidden
 	>
 		<GearIcon class="h-3.5 w-3.5" />
 	</button>
 </div>
-<style>
-	/* Reveal the gear only for the row currently marked as configurable
-	   (client script toggles the `hidden` attribute) and only on hover of
-	   that row, so the list stays visually calm when not interacted with. */
-	.animation-option-row:hover .animation-option-row__gear {
-		opacity: 1;
-	}
-</style>
