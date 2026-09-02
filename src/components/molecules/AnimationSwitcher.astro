@@ -1,0 +1,55 @@
+---
+import AnimationOptionButton from '../atoms/AnimationOptionButton.astro';
+import { listAnimations } from '../../infrastructure/animations/registry';
+import { ACTIVE_BACKGROUND_ANIMATION } from '../../config/site';
+
+const animations = listAnimations();
+---
+<div class="group fixed bottom-6 right-6 z-10">
+	<button
+		type="button"
+		aria-haspopup="true"
+		aria-expanded="false"
+		id="animation-switcher-trigger"
+		class="rounded border border-space-border bg-space-surface/80 px-3 py-2 text-sm text-space-muted backdrop-blur transition-colors hover:text-space-text"
+	>
+		Background ✦
+	</button>
+	<div
+		id="animation-switcher-menu"
+		role="menu"
+		class="pointer-events-none absolute bottom-full right-0 mb-2 w-44 rounded border border-space-border bg-space-surface/95 p-1 opacity-0 backdrop-blur transition-opacity duration-150 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100"
+	>
+		{animations.map((a) => (
+			<AnimationOptionButton name={a.name} label={a.label} active={a.name === ACTIVE_BACKGROUND_ANIMATION} />
+		))}
+	</div>
+</div>
+<script>
+	import { getBackgroundAnimationController } from '../../config/background-animation-client';
+
+	const canvas = document.getElementById('background-animation') as HTMLCanvasElement | null;
+	const menu = document.getElementById('animation-switcher-menu');
+	if (canvas && menu) {
+		const controller = getBackgroundAnimationController(canvas);
+
+		const buttons = menu.querySelectorAll<HTMLButtonElement>('[data-animation-option]');
+		const syncActiveState = () => {
+			const current = controller.getCurrent();
+			buttons.forEach((btn) => {
+				btn.setAttribute('aria-pressed', String(btn.dataset.animationOption === current));
+			});
+		};
+
+		buttons.forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const name = btn.dataset.animationOption;
+				if (!name) return;
+				controller.switchTo(name as Parameters<typeof controller.switchTo>[0]);
+				syncActiveState();
+			});
+		});
+
+		syncActiveState();
+	}
+</script>

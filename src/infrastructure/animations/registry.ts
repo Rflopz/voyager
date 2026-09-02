@@ -2,18 +2,42 @@ import type { BackgroundAnimation } from '../../domain/background-animation';
 import { StarfieldAnimation } from './starfield-animation';
 import { NebulaDriftAnimation } from './nebula-drift-animation';
 
+interface AnimationRegistryEntry {
+  label: string;
+  create: () => BackgroundAnimation;
+}
+
 /**
- * Registry mapping an animation name to its adapter. To add a new
- * animation: implement BackgroundAnimation in a new file in this folder,
- * then add one line here. Nothing else in the codebase needs to change.
+ * Registry mapping an animation name to its label + adapter factory. To add
+ * a new animation: implement BackgroundAnimation in a new file in this
+ * folder, then add one entry here. Nothing else in the codebase — not the
+ * config switch, not the switcher UI, not any component — needs to change;
+ * the UI list is generated from this registry.
  */
 export const animationRegistry = {
-  starfield: () => new StarfieldAnimation(),
-  'nebula-drift': () => new NebulaDriftAnimation(),
-} as const;
+  starfield: {
+    label: 'Starfield',
+    create: () => new StarfieldAnimation(),
+  },
+  'nebula-drift': {
+    label: 'Nebula Drift',
+    create: () => new NebulaDriftAnimation(),
+  },
+} satisfies Record<string, AnimationRegistryEntry>;
 
 export type AnimationName = keyof typeof animationRegistry;
 
 export function createAnimation(name: AnimationName): BackgroundAnimation {
-  return animationRegistry[name]();
+  return animationRegistry[name].create();
+}
+
+export function listAnimations(): { name: AnimationName; label: string }[] {
+  return (Object.keys(animationRegistry) as AnimationName[]).map((name) => ({
+    name,
+    label: animationRegistry[name].label,
+  }));
+}
+
+export function isAnimationName(value: string): value is AnimationName {
+  return value in animationRegistry;
 }

@@ -1,0 +1,16 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  active: boolean;
+}
+const { name, label, active } = Astro.props;
+---
+<button
+	type="button"
+	data-animation-option={name}
+	aria-pressed={active}
+	class="w-full rounded px-3 py-1.5 text-left text-sm text-space-text transition-colors hover:bg-space-border/60 aria-pressed:text-space-accent"
+>
+	{label}
+</button>

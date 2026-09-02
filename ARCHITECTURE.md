@@ -10,9 +10,14 @@ src/domain/            Pure types + port interfaces. No I/O, no framework.
   cv.ts                   CvData shape (mirrors what the site needs from RenderCV YAML)
   cv-repository.ts        CvRepository port — how content gets loaded
   background-animation.ts BackgroundAnimation port — how a bg animation mounts/cleans up
+  animation-preference.ts AnimationPreferenceStore port — how the chosen animation persists
 
 src/application/       Use cases. Depend only on domain/ ports.
-  get-cv.ts               getCv(repository) — the one use case so far
+  get-cv.ts               getCv(repository) — the one CV use case
+  background-animation-controller.ts
+                          BackgroundAnimationController — mounts/switches animations,
+                          persists choice via an AnimationPreferenceStore, generic
+                          over an AnimationCatalog shape (list/create/isValidName)
 
 src/infrastructure/    Adapters implementing domain/ ports. Framework/IO-aware.
   content/
@@ -20,20 +25,26 @@ src/infrastructure/    Adapters implementing domain/ ports. Framework/IO-aware.
   animations/
     starfield-animation.ts    Adapter: drifting starfield
     nebula-drift-animation.ts Adapter: soft moving color blobs
-    registry.ts               name -> adapter factory map
-    mount-background-animation.ts  client bootstrap: registry + config -> mount()
+    registry.ts               name -> {label, factory} map; listAnimations()/createAnimation()/isAnimationName()
+    local-storage-animation-preference-store.ts
+                              localStorage adapter for AnimationPreferenceStore
 
 src/config/             Composition root + feature switches. The ONLY files
                         that wire a concrete adapter into a use case/port.
   cv-source.ts            wires YamlCvRepository into getCv(); exports `cv`
-  site.ts                 ACTIVE_BACKGROUND_ANIMATION switch
+  site.ts                 ACTIVE_BACKGROUND_ANIMATION default switch
+  background-animation-client.ts
+                          client-side composition root: wires the registry +
+                          localStorage store into one BackgroundAnimationController
+                          singleton, shared by AnimatedBackground and AnimationSwitcher
 
 src/components/         Atomic design. Presentation only — no direct
                         infrastructure imports; pages pass data down as props.
-  atoms/                  Badge, AnimatedBackground (mounts the configured animation)
-  molecules/              (reserved for future small compositions, e.g. timeline row)
+  atoms/                  Badge, AnimatedBackground (starts the controller),
+                          AnimationOptionButton (one clickable menu row)
+  molecules/              AnimationSwitcher (hover-reveal menu, listed from the registry)
   organisms/              Hero, (future: Timeline, ProjectsGrid, SkillsGrid, ...)
-  templates/              BaseLayout
+  templates/              BaseLayout (mounts AnimatedBackground + AnimationSwitcher)
 
 src/pages/              Astro routes. Import `cv` from config/cv-source.ts,
                         pass plain data into organisms — never touch
@@ -52,11 +63,17 @@ data already resolved by `config/` (composition root) via page props.
 
 1. Add `src/infrastructure/animations/<name>-animation.ts` implementing
    `BackgroundAnimation` (see `domain/background-animation.ts`).
-2. Add one line to `src/infrastructure/animations/registry.ts`.
-3. Change `ACTIVE_BACKGROUND_ANIMATION` in `src/config/site.ts`.
+2. Add one entry to `src/infrastructure/animations/registry.ts` (name, label, factory).
+3. (Optional) Change the default in `ACTIVE_BACKGROUND_ANIMATION`
+   (`src/config/site.ts`) — not required for it to appear in the switcher,
+   only to change what loads before any user choice/localStorage kicks in.
 
 Nothing else changes — not the atom that renders the `<canvas>`, not the
-layout, not any page.
+switcher UI, not the layout, not any page. The on-page switcher
+(`components/molecules/AnimationSwitcher.astro`, hover the "Background ✦"
+button bottom-right) lists every registered animation automatically and
+lets a visitor swap live; their choice persists via `localStorage`
+(`LocalStorageAnimationPreferenceStore`) across reloads.
 
 Currently registered: `starfield` (default), `nebula-drift` (alternative,
 still under evaluation).
