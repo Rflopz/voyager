@@ -1,0 +1,8 @@
+<canvas id="background-animation" class="fixed inset-0 -z-10 h-full w-full" aria-hidden="true"></canvas>
+<script>
+  import { mountBackgroundAnimation } from '../../infrastructure/animations/mount-background-animation';
+  const canvas = document.getElementById('background-animation') as HTMLCanvasElement | null;
+  if (canvas) {
+    mountBackgroundAnimation(canvas);
+  }
+</script>

@@ -1,0 +1,11 @@
+---
+interface Props {
+  label: string;
+  tone?: 'accent' | 'accent2';
+}
+const { label, tone = 'accent' } = Astro.props;
+const toneClass = tone === 'accent' ? 'text-space-accent' : 'text-space-accent2';
+---
+<span class={`rounded border border-space-border bg-space-surface px-3 py-1 text-sm ${toneClass}`}>
+	{label}
+</span>

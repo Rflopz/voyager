@@ -1,0 +1,13 @@
+---
+interface Props {
+  name: string;
+  headline: string;
+  location: string;
+}
+const { name, headline, location } = Astro.props;
+---
+<section class="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
+	<h1 class="font-display text-4xl text-space-text">{name}</h1>
+	<p class="text-space-accent text-lg">{headline}</p>
+	<p class="text-space-muted text-sm">{location}</p>
+</section>

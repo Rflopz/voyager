@@ -4,8 +4,8 @@ interface Props {
   description?: string;
 }
 const { title = 'Rafael Lopez Castillo — Full-Stack Software Engineer', description = 'Full-stack software engineer building production systems in React, Node.js, and Go.' } = Astro.props;
-import '../styles/global.css';
-import StarfieldBackground from '../components/StarfieldBackground.astro';
+import '../../styles/global.css';
+import AnimatedBackground from '../atoms/AnimatedBackground.astro';
 ---
 <html lang="en">
 	<head>
@@ -17,7 +17,7 @@ import StarfieldBackground from '../components/StarfieldBackground.astro';
 		<title>{title}</title>
 	</head>
 	<body class="min-h-screen font-sans antialiased">
-		<StarfieldBackground />
+		<AnimatedBackground />
 		<slot />
 	</body>
 </html>
