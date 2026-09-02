@@ -200,7 +200,7 @@ void main(){
 
     // ---- lensed meteors (plain 2D canvas, screen-space two-body toy) ----
     const mctx = meteorCanvas.getContext('2d');
-    let mdpr = Math.min(window.devicePixelRatio || 1, 2);
+    const mdpr = Math.min(window.devicePixelRatio || 1, 2);
     let mu = 0;
     let nextMeteor = 2.2;
     interface Meteor {

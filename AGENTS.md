@@ -8,6 +8,16 @@ astro dev --background
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
+## Code style
+
+Before considering a change done, run:
+
+```
+pnpm run lint
+```
+
+ESLint config is `eslint.config.js` (flat config, TS + Astro). `pnpm run lint:fix` auto-fixes what it can.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
