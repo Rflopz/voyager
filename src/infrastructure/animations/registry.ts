@@ -1,4 +1,4 @@
-import type { BackgroundAnimation } from '../../domain/background-animation';
+import type { BackgroundAnimation } from '../../domain/animations/background-animation';
 import { StarfieldAnimation } from './starfield-animation';
 import { NebulaDriftAnimation } from './nebula-drift-animation';
 import { BlackholeAnimation } from './blackhole-animation';

@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import type { BackgroundAnimation, MountedAnimation } from '../../domain/background-animation';
+import type { BackgroundAnimation, MountedAnimation } from '../../domain/animations/background-animation';
+import { prefersReducedMotion } from '../animations/motion-preference';
+import { isMobileViewport, MOBILE_BREAKPOINT_PX } from '../animations/viewport';
 
 /**
  * Permanent parallax starfield — the original background layer from the
@@ -16,8 +18,8 @@ import type { BackgroundAnimation, MountedAnimation } from '../../domain/backgro
  */
 export class ParallaxStarfieldBackdrop implements BackgroundAnimation {
   mount(canvas: HTMLCanvasElement): MountedAnimation {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let mobile = window.innerWidth < 760;
+    const reduced = prefersReducedMotion();
+    let mobile = isMobileViewport();
 
     let renderer: THREE.WebGLRenderer;
     try {
@@ -139,7 +141,7 @@ void main(){
     const resize = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
-      mobile = w < 760;
+      mobile = w < MOBILE_BREAKPOINT_PX;
       renderer.setSize(w, h, false);
       if (reduced) frame(0);
     };

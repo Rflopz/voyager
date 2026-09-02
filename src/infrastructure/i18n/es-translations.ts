@@ -1,4 +1,4 @@
-import type { Translations } from '../../domain/translations';
+import type { Translations } from '../../domain/i18n/translations';
 
 /**
  * Spanish translations, keyed by the same `data-i18n` attribute values

@@ -1,5 +1,5 @@
-import type { CvData } from '../domain/cv';
-import type { CvRepository } from '../domain/cv-repository';
+import type { CvData } from '../domain/cv/cv';
+import type { CvRepository } from '../domain/cv/cv-repository';
 
 /**
  * Use case: fetch the CV content to render on the site.

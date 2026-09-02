@@ -1,4 +1,4 @@
-import type { SocialNetwork } from '../domain/cv';
+import type { SocialNetwork } from '../domain/cv/cv';
 
 /**
  * Pure mapping from a RenderCV social_networks entry to a clickable URL.

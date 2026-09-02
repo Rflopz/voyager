@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import type { BackgroundAnimation, MountedAnimation } from '../../domain/background-animation';
+import type { BackgroundAnimation, MountedAnimation } from '../../domain/animations/background-animation';
+import { prefersReducedMotion } from './motion-preference';
+import { isMobileViewport, MOBILE_BREAKPOINT_PX } from './viewport';
 
 /**
  * "Blackhole" adapter — ported from the Rafael-landing-page template.
@@ -25,7 +27,7 @@ import type { BackgroundAnimation, MountedAnimation } from '../../domain/backgro
  * template's tuning knobs (camera tilt, disk radius, Doppler strength) are
  * visual-design constants, not a "speed" the user would sensibly drag a
  * slider for, so no gear icon appears for this animation (that capability
- * is optional per adapter, see domain/animation-settings.ts).
+ * is optional per adapter, see domain/animations/settings.ts).
  */
 export class BlackholeAnimation implements BackgroundAnimation {
   mount(canvas: HTMLCanvasElement): MountedAnimation {
@@ -34,8 +36,8 @@ export class BlackholeAnimation implements BackgroundAnimation {
       return { pause() {}, resume() {}, unmount() {} };
     }
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let mobile = window.innerWidth < 760;
+    const reduced = prefersReducedMotion();
+    let mobile = isMobileViewport();
 
     // ---- layered DOM: meteor canvas, grain canvas ----
     // Note: explicit width/height:100% is required here (not just
@@ -301,7 +303,7 @@ void main(){
     const resize = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
-      mobile = w < 760;
+      mobile = w < MOBILE_BREAKPOINT_PX;
       renderer!.setSize(w, h, false);
       bhU.uRes.value.set(w * dpr, h * dpr);
       base = { x: mobile ? 0.5 : 0.78, y: mobile ? 0.72 : 0.55 };

@@ -1,5 +1,7 @@
-import type { BackgroundAnimation, MountedAnimation } from '../../domain/background-animation';
-import type { AnimationSettingParam, ConfigurableAnimation } from '../../domain/animation-settings';
+import type { BackgroundAnimation, MountedAnimation } from '../../domain/animations/background-animation';
+import type { AnimationSettingParam, ConfigurableAnimation } from '../../domain/animations/settings';
+import { SingleNumericSetting } from '../../domain/animations/single-numeric-setting';
+import { watchReducedMotion } from './motion-preference';
 
 interface Star {
   x: number;
@@ -12,28 +14,34 @@ interface Star {
  * pushing forward through space. Muted opacity, no neon.
  *
  * Implements ConfigurableAnimation to expose a tunable "Speed" setting via
- * the gear-icon settings panel (components/molecules/AnimationSettingsPanel).
+ * the gear-icon settings panel (components/molecules/AnimationSettingsPanel),
+ * delegated to SingleNumericSetting since "one speed slider" is the whole
+ * shape of this adapter's tunables.
  */
 export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnimation {
   private static readonly STAR_COUNT = 220;
   private static readonly DEFAULT_SPEED = 0.4;
   private static readonly STAR_COLOR = '228, 231, 238'; // rgb triplet
 
-  private speed = StarfieldAnimation.DEFAULT_SPEED;
+  private readonly speedSetting = new SingleNumericSetting({
+    key: 'speed',
+    label: 'Speed',
+    min: 0.05,
+    max: 2,
+    step: 0.05,
+    defaultValue: StarfieldAnimation.DEFAULT_SPEED,
+  });
 
   getSettingsSchema(): AnimationSettingParam[] {
-    return [
-      { key: 'speed', label: 'Speed', min: 0.05, max: 2, step: 0.05, defaultValue: StarfieldAnimation.DEFAULT_SPEED },
-    ];
+    return this.speedSetting.getSettingsSchema();
   }
 
   getSetting(key: string): number {
-    if (key === 'speed') return this.speed;
-    return 0;
+    return this.speedSetting.getSetting(key);
   }
 
   setSetting(key: string, value: number): void {
-    if (key === 'speed') this.speed = value;
+    this.speedSetting.setSetting(key, value);
   }
 
   mount(canvas: HTMLCanvasElement): MountedAnimation {
@@ -51,12 +59,7 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
       z: Math.random() * width,
     }));
 
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let prefersReducedMotion = motionQuery.matches;
-    const onMotionChange = (e: MediaQueryListEvent) => {
-      prefersReducedMotion = e.matches;
-    };
-    motionQuery.addEventListener('change', onMotionChange);
+    const motion = watchReducedMotion();
 
     const resize = () => {
       width = canvas.width = window.innerWidth;
@@ -74,8 +77,8 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
       ctx.translate(width / 2, height / 2);
 
       for (const star of stars) {
-        if (!prefersReducedMotion) {
-          star.z -= this.speed;
+        if (!motion.reduced) {
+          star.z -= this.speedSetting.value;
           if (star.z <= 0) star.z = width;
         }
         const k = 128 / star.z;
@@ -110,7 +113,7 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
         paused = true;
         if (rafId !== null) cancelAnimationFrame(rafId);
         window.removeEventListener('resize', resize);
-        motionQuery.removeEventListener('change', onMotionChange);
+        motion.dispose();
       },
     };
   }

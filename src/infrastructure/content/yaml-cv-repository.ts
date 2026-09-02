@@ -1,7 +1,7 @@
 import { parse } from 'yaml';
 import { readFileSync } from 'node:fs';
-import type { CvRepository } from '../../domain/cv-repository';
-import type { CvData } from '../../domain/cv';
+import type { CvRepository } from '../../domain/cv/cv-repository';
+import type { CvData } from '../../domain/cv/cv';
 
 /**
  * CvRepository adapter reading the RenderCV-format YAML synced from

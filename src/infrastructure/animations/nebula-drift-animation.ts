@@ -1,5 +1,7 @@
-import type { BackgroundAnimation, MountedAnimation } from '../../domain/background-animation';
-import type { AnimationSettingParam, ConfigurableAnimation } from '../../domain/animation-settings';
+import type { BackgroundAnimation, MountedAnimation } from '../../domain/animations/background-animation';
+import type { AnimationSettingParam, ConfigurableAnimation } from '../../domain/animations/settings';
+import { SingleNumericSetting } from '../../domain/animations/single-numeric-setting';
+import { watchReducedMotion } from './motion-preference';
 
 interface Blob {
   x: number;
@@ -19,7 +21,9 @@ interface Blob {
  * movement. Alternative aesthetic to StarfieldAnimation for comparison.
  *
  * Implements ConfigurableAnimation to expose a tunable "Speed" setting via
- * the gear-icon settings panel (components/molecules/AnimationSettingsPanel).
+ * the gear-icon settings panel (components/molecules/AnimationSettingsPanel),
+ * delegated to SingleNumericSetting — see StarfieldAnimation for the same
+ * pattern.
  */
 export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAnimation {
   private static readonly BLOB_COLORS = [
@@ -32,21 +36,25 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
   private static readonly PULSE_SPEED = 0.008;
   private static readonly PULSE_AMOUNT = 0.15; // +/- 15% radius breathing
 
-  private speed = NebulaDriftAnimation.DEFAULT_SPEED;
+  private readonly speedSetting = new SingleNumericSetting({
+    key: 'speed',
+    label: 'Speed',
+    min: 0.1,
+    max: 2,
+    step: 0.05,
+    defaultValue: NebulaDriftAnimation.DEFAULT_SPEED,
+  });
 
   getSettingsSchema(): AnimationSettingParam[] {
-    return [
-      { key: 'speed', label: 'Speed', min: 0.1, max: 2, step: 0.05, defaultValue: NebulaDriftAnimation.DEFAULT_SPEED },
-    ];
+    return this.speedSetting.getSettingsSchema();
   }
 
   getSetting(key: string): number {
-    if (key === 'speed') return this.speed;
-    return 0;
+    return this.speedSetting.getSetting(key);
   }
 
   setSetting(key: string, value: number): void {
-    if (key === 'speed') this.speed = value;
+    this.speedSetting.setSetting(key, value);
   }
 
   mount(canvas: HTMLCanvasElement): MountedAnimation {
@@ -73,12 +81,7 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
       };
     });
 
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let prefersReducedMotion = motionQuery.matches;
-    const onMotionChange = (e: MediaQueryListEvent) => {
-      prefersReducedMotion = e.matches;
-    };
-    motionQuery.addEventListener('change', onMotionChange);
+    const motion = watchReducedMotion();
 
     const resize = () => {
       width = canvas.width = window.innerWidth;
@@ -96,9 +99,9 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
       ctx.clearRect(0, 0, width, height);
 
       for (const blob of blobs) {
-        if (!prefersReducedMotion) {
-          blob.x += blob.vx * this.speed;
-          blob.y += blob.vy * this.speed;
+        if (!motion.reduced) {
+          blob.x += blob.vx * this.speedSetting.value;
+          blob.y += blob.vy * this.speedSetting.value;
           const margin = blob.baseRadius * 0.3;
           if (blob.x < -margin) blob.vx = Math.abs(blob.vx);
           if (blob.x > width + margin) blob.vx = -Math.abs(blob.vx);
@@ -136,7 +139,7 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
         paused = true;
         if (rafId !== null) cancelAnimationFrame(rafId);
         window.removeEventListener('resize', resize);
-        motionQuery.removeEventListener('change', onMotionChange);
+        motion.dispose();
       },
     };
   }

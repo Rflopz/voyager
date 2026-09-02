@@ -1,5 +1,5 @@
-import type { LocalePreferenceStore } from '../domain/locale-preference-store';
-import { DEFAULT_LOCALE, type Locale, type Translations } from '../domain/translations';
+import type { LocalePreferenceStore } from '../domain/i18n/preference-store';
+import { DEFAULT_LOCALE, type Locale, type Translations } from '../domain/i18n/translations';
 
 /**
  * Orchestrates the site's language toggle: tracks the current locale,

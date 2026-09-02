@@ -1,7 +1,8 @@
 import { BackgroundAnimationController } from '../application/background-animation-controller';
 import { listAnimations, createAnimation, isAnimationName, type AnimationName } from '../infrastructure/animations/registry';
-import { LocalStorageAnimationPreferenceStore } from '../infrastructure/animations/local-storage-animation-preference-store';
-import { LocalStorageAnimationSettingsStore } from '../infrastructure/animations/local-storage-animation-settings-store';
+import { AnimationPreferenceStorage } from '../infrastructure/animations/storage/preferences';
+import { AnimationSettingsStorage } from '../infrastructure/animations/storage/settings';
+import { LocalStorageAdapter } from '../infrastructure/storage/local-storage';
 import { ACTIVE_BACKGROUND_ANIMATION } from './site';
 
 let controllerInstance: BackgroundAnimationController<AnimationName> | null = null;
@@ -12,11 +13,14 @@ let controllerInstance: BackgroundAnimationController<AnimationName> | null = nu
  * because ES modules are cached per URL, so the AnimatedBackground atom,
  * the AnimationSwitcher molecule, and the AnimationSettingsPanel molecule
  * importing this file all share one instance) and wires in the concrete
- * registry + localStorage adapters. This is the only file that knows all
- * of those concrete pieces.
+ * registry + storage adapters. This is the only file that knows all of
+ * those concrete pieces — including that the storage mechanism today is
+ * localStorage (LocalStorageAdapter); swapping it means changing the one
+ * `new LocalStorageAdapter()` line here.
  */
 export function getBackgroundAnimationController(container: HTMLElement) {
   if (!controllerInstance) {
+    const storage = new LocalStorageAdapter();
     controllerInstance = new BackgroundAnimationController<AnimationName>(
       container,
       {
@@ -24,8 +28,8 @@ export function getBackgroundAnimationController(container: HTMLElement) {
         create: createAnimation,
         isValidName: isAnimationName,
       },
-      new LocalStorageAnimationPreferenceStore(),
-      new LocalStorageAnimationSettingsStore(),
+      new AnimationPreferenceStorage(storage),
+      new AnimationSettingsStorage(storage),
       ACTIVE_BACKGROUND_ANIMATION
     );
   }

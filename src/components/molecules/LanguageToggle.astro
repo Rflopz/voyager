@@ -30,7 +30,7 @@
 </div>
 <script>
   import { getLocaleController } from '../../config/locale-client';
-  import type { Locale } from '../../domain/translations';
+  import type { Locale } from '../../domain/i18n/translations';
 
   const controller = getLocaleController();
   const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-i18n]'));

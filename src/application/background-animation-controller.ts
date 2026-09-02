@@ -1,7 +1,7 @@
-import type { BackgroundAnimation, MountedAnimation } from '../domain/background-animation';
-import type { AnimationPreferenceStore } from '../domain/animation-preference';
-import type { AnimationSettingsStore } from '../domain/animation-settings-store';
-import { isConfigurable, type AnimationSettingParam } from '../domain/animation-settings';
+import type { BackgroundAnimation, MountedAnimation } from '../domain/animations/background-animation';
+import type { AnimationPreferenceStore } from '../domain/animations/preference-store';
+import type { AnimationSettingsStore } from '../domain/animations/settings-store';
+import { isConfigurable, type AnimationSettingParam } from '../domain/animations/settings';
 
 export interface AnimationCatalogEntry<TName extends string = string> {
   name: TName;
