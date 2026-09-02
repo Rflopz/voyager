@@ -1,6 +1,6 @@
 import type { BackgroundAnimation, MountedAnimation } from '../../domain/animations/background-animation';
 import type { AnimationSettingParam, ConfigurableAnimation } from '../../domain/animations/settings';
-import { SingleNumericSetting } from '../../domain/animations/single-numeric-setting';
+import { NumericSettings } from '../../domain/animations/numeric-settings';
 import { watchReducedMotion } from './motion-preference';
 
 interface Blob {
@@ -22,7 +22,7 @@ interface Blob {
  *
  * Implements ConfigurableAnimation to expose a tunable "Speed" setting via
  * the gear-icon settings panel (components/molecules/AnimationSettingsPanel),
- * delegated to SingleNumericSetting — see StarfieldAnimation for the same
+ * delegated to NumericSettings — see StarfieldAnimation for the same
  * pattern.
  */
 export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAnimation {
@@ -36,25 +36,20 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
   private static readonly PULSE_SPEED = 0.008;
   private static readonly PULSE_AMOUNT = 0.15; // +/- 15% radius breathing
 
-  private readonly speedSetting = new SingleNumericSetting({
-    key: 'speed',
-    label: 'Speed',
-    min: 0.1,
-    max: 2,
-    step: 0.05,
-    defaultValue: NebulaDriftAnimation.DEFAULT_SPEED,
-  });
+  private readonly settings = new NumericSettings([
+    { key: 'speed', label: 'Speed', min: 0.1, max: 2, step: 0.05, defaultValue: NebulaDriftAnimation.DEFAULT_SPEED },
+  ]);
 
   getSettingsSchema(): AnimationSettingParam[] {
-    return this.speedSetting.getSettingsSchema();
+    return this.settings.getSettingsSchema();
   }
 
   getSetting(key: string): number {
-    return this.speedSetting.getSetting(key);
+    return this.settings.getSetting(key);
   }
 
   setSetting(key: string, value: number): void {
-    this.speedSetting.setSetting(key, value);
+    this.settings.setSetting(key, value);
   }
 
   mount(canvas: HTMLCanvasElement): MountedAnimation {
@@ -103,8 +98,8 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
 
       for (const blob of blobs) {
         if (!motion.reduced) {
-          blob.x += blob.vx * this.speedSetting.value;
-          blob.y += blob.vy * this.speedSetting.value;
+          blob.x += blob.vx * this.settings.getSetting('speed');
+          blob.y += blob.vy * this.settings.getSetting('speed');
           const margin = blob.baseRadius * 0.3;
 
           if (blob.x < -margin) blob.vx = Math.abs(blob.vx);

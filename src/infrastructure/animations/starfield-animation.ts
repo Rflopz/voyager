@@ -1,6 +1,6 @@
 import type { BackgroundAnimation, MountedAnimation } from '../../domain/animations/background-animation';
 import type { AnimationSettingParam, ConfigurableAnimation } from '../../domain/animations/settings';
-import { SingleNumericSetting } from '../../domain/animations/single-numeric-setting';
+import { NumericSettings } from '../../domain/animations/numeric-settings';
 import { watchReducedMotion } from './motion-preference';
 
 interface Star {
@@ -15,7 +15,7 @@ interface Star {
  *
  * Implements ConfigurableAnimation to expose a tunable "Speed" setting via
  * the gear-icon settings panel (components/molecules/AnimationSettingsPanel),
- * delegated to SingleNumericSetting since "one speed slider" is the whole
+ * delegated to NumericSettings since "one speed slider" is the whole
  * shape of this adapter's tunables.
  */
 export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnimation {
@@ -23,25 +23,20 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
   private static readonly DEFAULT_SPEED = 0.4;
   private static readonly STAR_COLOR = '228, 231, 238'; // rgb triplet
 
-  private readonly speedSetting = new SingleNumericSetting({
-    key: 'speed',
-    label: 'Speed',
-    min: 0.05,
-    max: 2,
-    step: 0.05,
-    defaultValue: StarfieldAnimation.DEFAULT_SPEED,
-  });
+  private readonly settings = new NumericSettings([
+    { key: 'speed', label: 'Speed', min: 0.05, max: 2, step: 0.05, defaultValue: StarfieldAnimation.DEFAULT_SPEED },
+  ]);
 
   getSettingsSchema(): AnimationSettingParam[] {
-    return this.speedSetting.getSettingsSchema();
+    return this.settings.getSettingsSchema();
   }
 
   getSetting(key: string): number {
-    return this.speedSetting.getSetting(key);
+    return this.settings.getSetting(key);
   }
 
   setSetting(key: string, value: number): void {
-    this.speedSetting.setSetting(key, value);
+    this.settings.setSetting(key, value);
   }
 
   mount(canvas: HTMLCanvasElement): MountedAnimation {
@@ -81,7 +76,7 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
 
       for (const star of stars) {
         if (!motion.reduced) {
-          star.z -= this.speedSetting.value;
+          star.z -= this.settings.getSetting('speed');
 
           if (star.z <= 0) star.z = width;
         }
