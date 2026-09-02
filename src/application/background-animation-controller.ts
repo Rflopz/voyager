@@ -20,22 +20,31 @@ export interface AnimationCatalog<TName extends string = string> {
 }
 
 /**
- * Orchestrates mounting a BackgroundAnimation onto a canvas, switching
- * between registered animations, pausing/resuming playback, and — for
- * animations implementing ConfigurableAnimation — reading/writing tunable
- * settings (e.g. speed), persisting both the animation choice and its
- * settings via the given store ports. Framework-agnostic (no Astro/DOM
- * event wiring beyond the canvas element itself) — components/scripts wire
- * this to click/input handlers, they don't reimplement any of this logic.
+ * Orchestrates mounting a BackgroundAnimation into a container element,
+ * switching between registered animations, pausing/resuming playback, and
+ * — for animations implementing ConfigurableAnimation — reading/writing
+ * tunable settings (e.g. speed), persisting both the animation choice and
+ * its settings via the given store ports.
+ *
+ * IMPORTANT: each switchToAnimation gets its OWN fresh <canvas>, created
+ * and destroyed by this controller — never reused across animations. A
+ * <canvas> element's rendering context (2d vs webgl) is permanent for
+ * that element's lifetime; reusing one canvas across adapters that need
+ * different context types (e.g. the 2d StarfieldAnimation after the WebGL
+ * BlackholeAnimation) makes `getContext()` return null for the second
+ * adapter, which silently no-ops (see BackgroundAnimation.mount's guard
+ * clauses) — that was the cause of "switching does nothing" bugs. Handing
+ * out a brand-new canvas per mount sidesteps the whole class of bug.
  */
 export class BackgroundAnimationController<TName extends string = string> {
   private mounted: MountedAnimation | null = null;
   private mountedAnimation: BackgroundAnimation | null = null;
+  private currentCanvas: HTMLCanvasElement | null = null;
   private current: TName;
   private playing = true;
 
   constructor(
-    private readonly canvas: HTMLCanvasElement,
+    private readonly container: HTMLElement,
     private readonly catalog: AnimationCatalog<TName>,
     private readonly preferenceStore: AnimationPreferenceStore,
     private readonly settingsStore: AnimationSettingsStore,
@@ -109,6 +118,16 @@ export class BackgroundAnimationController<TName extends string = string> {
 
   private mount(name: TName): void {
     this.mounted?.unmount();
+    if (this.currentCanvas) {
+      this.currentCanvas.remove();
+      this.currentCanvas = null;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'fixed inset-0 h-full w-full';
+    this.container.appendChild(canvas);
+    this.currentCanvas = canvas;
+
     const animation = this.catalog.create(name);
 
     if (isConfigurable(animation)) {
@@ -120,7 +139,7 @@ export class BackgroundAnimationController<TName extends string = string> {
       }
     }
 
-    this.mounted = animation.mount(this.canvas);
+    this.mounted = animation.mount(canvas);
     this.mountedAnimation = animation;
     this.current = name;
     this.preferenceStore.set(name);

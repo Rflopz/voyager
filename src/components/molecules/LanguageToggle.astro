@@ -1,0 +1,80 @@
+---
+/**
+ * EN/ES toggle. The visible EN/ES buttons plus the client script that
+ * swaps every [data-i18n] node's text via the LocaleController — this is
+ * the one place in the codebase that knows about that DOM contract, same
+ * spirit as AnimationSwitcher owning the animation DOM wiring.
+ *
+ * No positioning of its own — BaseLayout places this inside the same
+ * fixed top-right row as AnimationSwitcher so the two never collide.
+ */
+---
+<div class="flex items-center gap-2 font-mono text-[11px] tracking-[0.18em]">
+  <button
+    id="lang-en"
+    type="button"
+    aria-label="English"
+    class="cursor-pointer border-0 bg-transparent p-0 font-inherit text-space-text transition-opacity duration-500"
+  >
+    EN
+  </button>
+  <span class="text-space-muted opacity-35">/</span>
+  <button
+    id="lang-es"
+    type="button"
+    aria-label="Español"
+    class="cursor-pointer border-0 bg-transparent p-0 font-inherit text-space-text opacity-35 transition-opacity duration-500"
+  >
+    ES
+  </button>
+</div>
+<script>
+  import { getLocaleController } from '../../config/locale-client';
+  import type { Locale } from '../../domain/translations';
+
+  const controller = getLocaleController();
+  const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-i18n]'));
+  const english: Record<string, string> = {};
+  nodes.forEach((n) => {
+    const key = n.getAttribute('data-i18n');
+    if (key) english[key] = n.textContent ?? '';
+  });
+
+  const enBtn = document.getElementById('lang-en');
+  const esBtn = document.getElementById('lang-es');
+
+  function applyLocale(locale: Locale, immediate = false) {
+    const dict = controller.getDictionary(locale);
+    const swap = () => {
+      nodes.forEach((n) => {
+        const key = n.getAttribute('data-i18n');
+        if (!key) return;
+        n.textContent = dict?.[key] ?? english[key];
+      });
+      document.documentElement.lang = locale;
+    };
+    if (immediate) {
+      swap();
+    } else {
+      document.body.style.transition = 'opacity 200ms cubic-bezier(.2,.7,.2,1)';
+      document.body.style.opacity = '0';
+      setTimeout(() => {
+        swap();
+        document.body.style.opacity = '1';
+      }, 200);
+    }
+    enBtn?.style.setProperty('opacity', locale === 'en' ? '1' : '0.35');
+    esBtn?.style.setProperty('opacity', locale === 'es' ? '1' : '0.35');
+  }
+
+  enBtn?.addEventListener('click', () => {
+    controller.setLocale('en');
+    applyLocale('en');
+  });
+  esBtn?.addEventListener('click', () => {
+    controller.setLocale('es');
+    applyLocale('es');
+  });
+
+  applyLocale(controller.getCurrent(), true);
+</script>

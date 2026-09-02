@@ -1,8 +1,19 @@
 ---
 import BaseLayout from '../components/templates/BaseLayout.astro';
 import Hero from '../components/organisms/Hero.astro';
+import About from '../components/organisms/About.astro';
+import SelectedWork from '../components/organisms/SelectedWork.astro';
+import Writing from '../components/organisms/Writing.astro';
+import Experience from '../components/organisms/Experience.astro';
+import Contact from '../components/organisms/Contact.astro';
 import { cv } from '../config/cv-source';
+import { about, writingArticles } from '../data/site-content';
 ---
 <BaseLayout>
-	<Hero name={cv.name} headline={cv.headline} location={cv.location} />
+	<Hero name={cv.name} headline={cv.headline} email={cv.email} socialNetworks={cv.social_networks} />
+	<About content={about} />
+	<SelectedWork projects={cv.projects} />
+	<Writing articles={writingArticles} />
+	<Experience experience={cv.experience} />
+	<Contact email={cv.email} socialNetworks={cv.social_networks} />
 </BaseLayout>

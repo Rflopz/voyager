@@ -1,8 +1,18 @@
-<canvas id="background-animation" class="fixed inset-0 -z-10 h-full w-full" aria-hidden="true"></canvas>
+---
+/**
+ * Container the BackgroundAnimationController mounts the currently
+ * selected animation's <canvas> into (a fresh canvas per animation — see
+ * application/background-animation-controller.ts for why). Transparent by
+ * default and rendered ABOVE the persistent StarsBackdrop, so every
+ * animation appears layered on top of the same starfield backdrop
+ * instead of replacing it.
+ */
+---
+<div id="background-animation-container" class="fixed inset-0 z-0 h-full w-full" aria-hidden="true"></div>
 <script>
   import { getBackgroundAnimationController } from '../../config/background-animation-client';
-  const canvas = document.getElementById('background-animation') as HTMLCanvasElement | null;
-  if (canvas) {
-    getBackgroundAnimationController(canvas).start();
+  const container = document.getElementById('background-animation-container');
+  if (container) {
+    getBackgroundAnimationController(container).start();
   }
 </script>

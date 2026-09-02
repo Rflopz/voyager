@@ -1,0 +1,24 @@
+---
+/**
+ * Permanent starfield layer, always present regardless of which
+ * switchable animation the user has selected — the switcher only changes
+ * what renders IN FRONT of this. This is the original parallax starfield
+ * from the Rafael-landing-page blackhole template (three depth layers,
+ * eased cursor parallax, twinkle) — see
+ * infrastructure/backdrop/parallax-starfield-backdrop.ts.
+ *
+ * Mounted directly (not through BackgroundAnimationController — this
+ * layer is not user-choosable, has no settings panel, and is never torn
+ * down for the page's lifetime), but still goes through the same
+ * BackgroundAnimation port as every switchable adapter for consistency.
+ */
+---
+<canvas id="stars-backdrop" class="fixed inset-0 z-0 h-full w-full" aria-hidden="true"></canvas>
+<script>
+  import { ParallaxStarfieldBackdrop } from '../../infrastructure/backdrop/parallax-starfield-backdrop';
+
+  const canvas = document.getElementById('stars-backdrop') as HTMLCanvasElement | null;
+  if (canvas) {
+    new ParallaxStarfieldBackdrop().mount(canvas);
+  }
+</script>

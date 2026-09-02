@@ -18,9 +18,16 @@
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.2.10",
     "tailwindcss": "^4.3.3",
+    "three": "^0.185.1",
     "yaml": "^2.9.0"
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.4.0",
+    "@types/three": "^0.185.4",
+    "typescript": "^5.9.3"
   }
 }

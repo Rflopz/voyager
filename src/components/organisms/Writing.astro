@@ -1,0 +1,48 @@
+---
+import SectionIndex from '../atoms/SectionIndex.astro';
+import type { WritingArticle } from '../../domain/site-content';
+
+interface Props {
+  articles: WritingArticle[];
+}
+const { articles } = Astro.props;
+---
+<section
+  id="writing"
+  aria-labelledby="writing-h"
+  class="mt-[18vh] grid grid-cols-[clamp(58px,9vw,96px)_minmax(0,1fr)] items-start"
+>
+  <SectionIndex index="003" />
+  <div>
+    <h2
+      id="writing-h"
+      data-i18n="secWriting"
+      class="m-0 font-mono text-[11px] font-normal uppercase leading-[1.75] tracking-[0.18em] text-space-muted"
+    >
+      WRITING
+    </h2>
+    {
+      articles.length > 0 ? (
+        <ul class="mt-12 flex max-w-[760px] flex-col gap-[26px] p-0" style="list-style: none;">
+          {articles.map((a) => (
+            <li class="flex items-baseline gap-7">
+              <span class="flex-none font-mono text-[11px] tracking-[0.18em] text-space-muted opacity-60">
+                {a.date}
+              </span>
+              <a
+                href={a.href}
+                class="border-b border-transparent text-base leading-[1.75] text-space-text transition-colors duration-500 hover:border-space-accent"
+              >
+                {a.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p data-i18n="writingEmpty" class="mt-12 text-base leading-[1.75] text-space-muted">
+          Nothing published yet.
+        </p>
+      )
+    }
+  </div>
+</section>

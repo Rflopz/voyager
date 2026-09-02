@@ -15,10 +15,10 @@ let controllerInstance: BackgroundAnimationController<AnimationName> | null = nu
  * registry + localStorage adapters. This is the only file that knows all
  * of those concrete pieces.
  */
-export function getBackgroundAnimationController(canvas: HTMLCanvasElement) {
+export function getBackgroundAnimationController(container: HTMLElement) {
   if (!controllerInstance) {
     controllerInstance = new BackgroundAnimationController<AnimationName>(
-      canvas,
+      container,
       {
         list: listAnimations,
         create: createAnimation,

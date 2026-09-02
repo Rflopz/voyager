@@ -1,13 +1,73 @@
 ---
+import { findSocialUrl } from '../../application/social-links';
+import type { SocialNetwork } from '../../domain/cv';
+
 interface Props {
   name: string;
   headline: string;
-  location: string;
+  email: string;
+  socialNetworks: SocialNetwork[];
 }
-const { name, headline, location } = Astro.props;
+const { name, headline, email, socialNetworks } = Astro.props;
+const [firstName, ...rest] = name.split(' ');
+const lastName = rest.join(' ');
+
+const github = findSocialUrl(socialNetworks, 'github');
+const linkedin = findSocialUrl(socialNetworks, 'linkedin');
 ---
-<section class="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-	<h1 class="font-display text-4xl text-space-text">{name}</h1>
-	<p class="text-space-accent text-lg">{headline}</p>
-	<p class="text-space-muted text-sm">{location}</p>
-</section>
+<header class="relative flex min-h-[100svh] flex-col justify-center py-[14vh]">
+  <h1
+    class="m-0 font-display text-[clamp(56px,13vw,184px)] font-normal uppercase leading-[0.84] tracking-[-0.025em] text-space-text"
+  >
+    <span class="block">{firstName}</span>
+    {lastName && <span class="block">{lastName}</span>}
+  </h1>
+
+  <p data-i18n="headline" class="mt-[38px] font-mono text-[11px] uppercase tracking-[0.18em] text-space-muted">
+    {headline}
+  </p>
+  <p class="mt-[14px] font-mono text-[11px] uppercase tracking-[0.18em] text-space-muted opacity-40">
+    REACT · VUE · NODE.JS · GO · PYTHON · POSTGRES
+  </p>
+
+  <nav aria-label="Elsewhere" class="mt-14 flex flex-wrap gap-[34px] font-mono text-[11px] tracking-[0.18em]">
+    <a
+      href={github}
+      target="_blank"
+      rel="noreferrer"
+      data-i18n="navGithub"
+      class="border-b border-transparent pb-[3px] text-space-muted transition-colors duration-500 hover:border-space-accent hover:text-space-text"
+    >
+      GITHUB
+    </a>
+    <a
+      href={linkedin}
+      target="_blank"
+      rel="noreferrer"
+      data-i18n="navLinkedin"
+      class="border-b border-transparent pb-[3px] text-space-muted transition-colors duration-500 hover:border-space-accent hover:text-space-text"
+    >
+      LINKEDIN
+    </a>
+    <a
+      href={`mailto:${email}`}
+      data-i18n="navEmail"
+      class="border-b border-transparent pb-[3px] text-space-muted transition-colors duration-500 hover:border-space-accent hover:text-space-text"
+    >
+      EMAIL
+    </a>
+    <a
+      href="#writing"
+      data-i18n="navWriting"
+      class="border-b border-transparent pb-[3px] text-space-muted transition-colors duration-500 hover:border-space-accent hover:text-space-text"
+    >
+      WRITING
+    </a>
+  </nav>
+
+  <div
+    aria-hidden="true"
+    class="absolute bottom-[6vh] left-0 h-10 w-px bg-space-text motion-safe:animate-[breathe_4200ms_cubic-bezier(.2,.7,.2,1)_infinite]"
+  >
+  </div>
+</header>

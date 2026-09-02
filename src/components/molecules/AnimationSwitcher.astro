@@ -1,6 +1,5 @@
 ---
 import AnimationOptionButton from '../atoms/AnimationOptionButton.astro';
-import PlayPauseButton from '../atoms/PlayPauseButton.astro';
 import RocketIcon from '../atoms/icons/RocketIcon.astro';
 import AnimationSettingsPanel from './AnimationSettingsPanel.astro';
 import { listAnimations } from '../../infrastructure/animations/registry';
@@ -8,40 +7,37 @@ import { ACTIVE_BACKGROUND_ANIMATION } from '../../config/site';
 
 const animations = listAnimations();
 ---
-<div class="fixed right-6 top-6 z-10 flex items-start gap-2">
-	<div class="animation-switcher group relative">
-		<button
-			type="button"
-			aria-haspopup="true"
-			aria-expanded="false"
-			aria-label="Change background animation"
-			id="animation-switcher-trigger"
-			class="animation-switcher__trigger flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-space-border bg-space-surface/90 text-space-muted backdrop-blur transition-colors hover:text-space-text"
-		>
-			<RocketIcon class="h-4 w-4 shrink-0" />
-		</button>
-		<div id="animation-switcher-menu" role="menu" class="animation-switcher__menu absolute right-0 top-full w-44">
-			<div class="animation-switcher__menu-inner rounded-bl-lg rounded-br-lg rounded-tl-lg border border-t-0 border-space-border bg-space-surface/90 p-1 backdrop-blur">
-				{animations.map((a) => (
-					<AnimationOptionButton name={a.name} label={a.label} active={a.name === ACTIVE_BACKGROUND_ANIMATION} />
-				))}
-			</div>
-			<AnimationSettingsPanel />
+<div class="animation-switcher group relative">
+	<button
+		type="button"
+		aria-haspopup="true"
+		aria-expanded="false"
+		aria-label="Change background animation"
+		id="animation-switcher-trigger"
+		class="animation-switcher__trigger flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-space-border bg-space-surface/90 text-space-muted backdrop-blur transition-colors hover:text-space-text"
+	>
+		<RocketIcon class="h-4 w-4 shrink-0" />
+	</button>
+	<div id="animation-switcher-menu" role="menu" class="animation-switcher__menu absolute right-0 top-full w-44">
+		<div class="animation-switcher__menu-inner rounded-bl-lg rounded-br-lg rounded-tl-lg border border-t-0 border-space-border bg-space-surface/90 p-1 backdrop-blur">
+			{animations.map((a) => (
+				<AnimationOptionButton name={a.name} label={a.label} active={a.name === ACTIVE_BACKGROUND_ANIMATION} />
+			))}
 		</div>
+		<AnimationSettingsPanel />
 	</div>
-	<PlayPauseButton />
 </div>
 <script>
 	import { getBackgroundAnimationController } from '../../config/background-animation-client';
 
-	const canvas = document.getElementById('background-animation') as HTMLCanvasElement | null;
+	const container = document.getElementById('background-animation-container');
 	const menu = document.getElementById('animation-switcher-menu');
 	const playPauseButton = document.getElementById('animation-playpause-toggle');
 	const settingsPanel = document.getElementById('animation-settings-panel');
 	const settingRowTemplate = document.getElementById('animation-setting-row-template') as HTMLTemplateElement | null;
 
-	if (canvas && menu) {
-		const controller = getBackgroundAnimationController(canvas);
+	if (container && menu) {
+		const controller = getBackgroundAnimationController(container);
 
 		const optionButtons = menu.querySelectorAll<HTMLButtonElement>('[data-animation-option]');
 		const gearButtons = menu.querySelectorAll<HTMLButtonElement>('[data-animation-settings-trigger]');

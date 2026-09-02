@@ -1,0 +1,32 @@
+---
+import SectionIndex from '../atoms/SectionIndex.astro';
+import type { AboutContent } from '../../domain/site-content';
+
+interface Props {
+  content: AboutContent;
+}
+const { content } = Astro.props;
+---
+<section
+  id="about"
+  aria-labelledby="about-h"
+  class="mt-[18vh] grid grid-cols-[clamp(58px,9vw,96px)_minmax(0,1fr)] items-start gap-0"
+>
+  <SectionIndex index="001" />
+  <div>
+    <h2
+      id="about-h"
+      data-i18n="secAbout"
+      class="m-0 font-mono text-[11px] font-normal uppercase leading-[1.75] tracking-[0.18em] text-space-muted"
+    >
+      ABOUT
+    </h2>
+    <div class="mt-11 flex max-w-[62ch] flex-col gap-[26px]">
+      {content.paragraphs.map((p) => <p class="m-0 text-base leading-[1.75] text-space-text text-pretty">{p}</p>)}
+    </div>
+    <div class="mt-16 flex flex-col gap-3 font-mono text-[11px] uppercase tracking-[0.18em] text-space-muted">
+      <p data-i18n="nowLabel" class="m-0 text-space-text opacity-55">NOW</p>
+      {content.now.map((item) => <p class="m-0">{item.label}</p>)}
+    </div>
+  </div>
+</section>

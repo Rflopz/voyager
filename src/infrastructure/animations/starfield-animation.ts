@@ -17,7 +17,6 @@ interface Star {
 export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnimation {
   private static readonly STAR_COUNT = 220;
   private static readonly DEFAULT_SPEED = 0.4;
-  private static readonly BG_COLOR = '#0b0e14';
   private static readonly STAR_COLOR = '228, 231, 238'; // rgb triplet
 
   private speed = StarfieldAnimation.DEFAULT_SPEED;
@@ -70,8 +69,7 @@ export class StarfieldAnimation implements BackgroundAnimation, ConfigurableAnim
 
     const frame = () => {
       if (paused) return;
-      ctx.fillStyle = StarfieldAnimation.BG_COLOR;
-      ctx.fillRect(0, 0, width, height);
+      ctx.clearRect(0, 0, width, height);
       ctx.save();
       ctx.translate(width / 2, height / 2);
 

@@ -1,0 +1,67 @@
+---
+import SectionIndex from '../atoms/SectionIndex.astro';
+import { parseLinkedName } from '../../application/format-cv-dates';
+import type { ProjectEntry } from '../../domain/cv';
+
+interface Props {
+  projects: ProjectEntry[];
+}
+const { projects } = Astro.props;
+---
+<section
+  id="work"
+  aria-labelledby="work-h"
+  class="mt-[18vh] grid grid-cols-[clamp(58px,9vw,96px)_minmax(0,1fr)] items-start"
+>
+  <SectionIndex index="002" />
+  <div>
+    <h2
+      id="work-h"
+      data-i18n="secWork"
+      class="m-0 font-mono text-[11px] font-normal uppercase leading-[1.75] tracking-[0.18em] text-space-muted"
+    >
+      SELECTED WORK
+    </h2>
+
+    <div class="mt-14 flex flex-col">
+      {
+        projects.map((project, i) => {
+          const { name, href } = parseLinkedName(project.name);
+          return (
+            <article class="work-row group relative -mx-[22px] grid grid-cols-[minmax(0,220px)_minmax(0,1fr)] gap-7 border-t border-space-border px-[22px] py-[42px] pb-[46px] transition-colors duration-700 hover:bg-space-surface last:border-b">
+              <span
+                aria-hidden="true"
+                class="absolute -top-px left-0 h-px w-full origin-left scale-x-0 bg-space-accent transition-transform duration-500 group-hover:scale-x-100"
+              />
+              <div class="flex flex-col gap-[10px] font-mono text-[11px] uppercase tracking-[0.18em] text-space-muted">
+                <span>{i === 0 ? 'CURRENT' : 'PERSONAL PROJECT'}</span>
+                <span class="opacity-50">{project.summary}</span>
+              </div>
+              <div class="transition-transform duration-700 group-hover:translate-x-[6px]">
+                <h3 class="m-0 font-display text-[28px] font-normal leading-[1.15] tracking-[-0.01em] text-space-text">
+                  {name}
+                </h3>
+                {project.highlights[0] && (
+                  <p class="mt-4 max-w-[62ch] text-base leading-[1.75] text-space-muted text-pretty">
+                    {project.highlights[0]}
+                  </p>
+                )}
+                {href && (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-i18n="viewProject"
+                    class="mt-[22px] inline-block border-b border-transparent pb-[3px] font-mono text-[11px] tracking-[0.18em] text-space-muted transition-colors duration-500 hover:border-space-accent hover:text-space-text"
+                  >
+                    VIEW PROJECT
+                  </a>
+                )}
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

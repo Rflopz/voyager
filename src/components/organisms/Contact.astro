@@ -1,0 +1,54 @@
+---
+import SectionIndex from '../atoms/SectionIndex.astro';
+import { findSocialUrl } from '../../application/social-links';
+import type { SocialNetwork } from '../../domain/cv';
+
+interface Props {
+  email: string;
+  socialNetworks: SocialNetwork[];
+}
+const { email, socialNetworks } = Astro.props;
+const github = findSocialUrl(socialNetworks, 'github');
+const linkedin = findSocialUrl(socialNetworks, 'linkedin');
+const year = new Date().getFullYear();
+---
+<footer class="mt-[22vh] grid grid-cols-[clamp(58px,9vw,96px)_minmax(0,1fr)] items-start pb-[16vh]">
+  <SectionIndex index="005" />
+  <div>
+    <h2
+      data-i18n="secContact"
+      class="m-0 font-mono text-[11px] font-normal uppercase leading-[1.75] tracking-[0.18em] text-space-muted"
+    >
+      CONTACT
+    </h2>
+    <p class="mt-11">
+      <a
+        href={`mailto:${email}`}
+        class="border-b border-transparent font-display text-5xl font-normal leading-[1.1] tracking-[-0.015em] text-space-text transition-colors duration-700 hover:border-space-accent"
+      >
+        {email}
+      </a>
+    </p>
+    <div class="mt-[52px] flex flex-wrap gap-[34px] font-mono text-[11px] tracking-[0.18em]">
+      <a
+        href={github}
+        target="_blank"
+        rel="noreferrer"
+        class="border-b border-transparent pb-[3px] text-space-muted transition-colors duration-500 hover:border-space-accent hover:text-space-text"
+      >
+        GITHUB
+      </a>
+      <a
+        href={linkedin}
+        target="_blank"
+        rel="noreferrer"
+        class="border-b border-transparent pb-[3px] text-space-muted transition-colors duration-500 hover:border-space-accent hover:text-space-text"
+      >
+        LINKEDIN
+      </a>
+    </div>
+    <p class="mt-24 font-mono text-[11px] uppercase tracking-[0.18em] text-space-muted opacity-40">
+      © {year} · <span data-i18n="footNote">BUILT BY HAND</span>
+    </p>
+  </div>
+</footer>

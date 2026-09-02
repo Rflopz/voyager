@@ -29,9 +29,15 @@ src/application/       Use cases. Depend only on domain/ ports.
 src/infrastructure/    Adapters implementing domain/ ports. Framework/IO-aware.
   content/
     yaml-cv-repository.ts   Reads src/data/cv.yaml (RenderCV format), implements CvRepository
+  backdrop/
+    parallax-starfield-backdrop.ts
+                              Permanent shared sky (three depth layers, cursor
+                              parallax, twinkle) mounted once by StarsBackdrop —
+                              NOT part of the switchable registry below
   animations/
-    starfield-animation.ts    Adapter: drifting starfield
-    nebula-drift-animation.ts Adapter: soft moving color blobs
+    starfield-animation.ts    Adapter: drifting starfield (2D canvas, transparent bg)
+    nebula-drift-animation.ts Adapter: soft moving color blobs (2D canvas, transparent bg)
+    blackhole-animation.ts    Adapter: Gargantua-style lensed black hole (WebGL + meteors + grain)
     registry.ts               name -> {label, factory} map; listAnimations()/createAnimation()/isAnimationName()
     local-storage-animation-preference-store.ts
                               localStorage adapter for AnimationPreferenceStore
@@ -72,6 +78,15 @@ data already resolved by `config/` (composition root) via page props.
 
 ## Swapping the background animation
 
+Every switchable animation renders IN FRONT of one permanent shared sky —
+`StarsBackdrop.astro` mounts `ParallaxStarfieldBackdrop`
+(`infrastructure/backdrop/`) once, directly, outside the registry below.
+It is not user-choosable and has no settings panel; switching only
+changes what layers on top of it. Adapters in the registry must paint
+with a transparent background (`ctx.clearRect`, not `ctx.fillRect`, for
+2D canvases; `alpha:true` + `setClearColor(0x000000, 0)` for WebGL) so
+the shared sky shows through.
+
 1. Add `src/infrastructure/animations/<name>-animation.ts` implementing
    `BackgroundAnimation` (see `domain/background-animation.ts` — `mount()`
    returns a `MountedAnimation` with `pause()`/`resume()`/`unmount()`).
@@ -80,7 +95,14 @@ data already resolved by `config/` (composition root) via page props.
    (`src/config/site.ts`) — not required for it to appear in the switcher,
    only to change what loads before any user choice/localStorage kicks in.
 
-Nothing else changes — not the atom that renders the `<canvas>`, not the
+`BackgroundAnimationController` (`application/`) hands each mounted
+animation its OWN fresh `<canvas>` (created/destroyed per switch) rather
+than reusing one element — a canvas's rendering context (`2d` vs `webgl`)
+is locked in for that element's lifetime, so reusing one across adapters
+that need different context types makes `getContext()` return `null` for
+the second adapter and silently no-op.
+
+Nothing else changes — not the atom that renders the container, not the
 switcher UI, not the layout, not any page. The top-right controls
 (`components/molecules/AnimationSwitcher.astro`) are a fixed-size (h-9 w-9)
 rocket icon button that never resizes, with the animation list as an

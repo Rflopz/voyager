@@ -1,0 +1,41 @@
+---
+import SectionIndex from '../atoms/SectionIndex.astro';
+import { formatYearRange } from '../../application/format-cv-dates';
+import type { ExperienceEntry } from '../../domain/cv';
+
+interface Props {
+  experience: ExperienceEntry[];
+}
+const { experience } = Astro.props;
+---
+<section
+  id="experience"
+  aria-labelledby="exp-h"
+  class="mt-[18vh] grid grid-cols-[clamp(58px,9vw,96px)_minmax(0,1fr)] items-start"
+>
+  <SectionIndex index="004" />
+  <div>
+    <h2
+      id="exp-h"
+      data-i18n="secExp"
+      class="m-0 font-mono text-[11px] font-normal uppercase leading-[1.75] tracking-[0.18em] text-space-muted"
+    >
+      EXPERIENCE
+    </h2>
+    <ul class="mt-11 flex max-w-[820px] flex-col gap-[18px] p-0" style="list-style: none;">
+      {
+        experience.map((entry) => (
+          <li class="grid grid-cols-[minmax(0,180px)_minmax(0,1fr)] gap-6">
+            <span class="font-mono text-[11px] leading-[1.9] tracking-[0.18em] text-space-muted opacity-60">
+              {formatYearRange(entry.start_date, entry.end_date)}
+            </span>
+            <p class="m-0 text-[15px] leading-[1.9] text-space-muted">
+              {entry.company} · {entry.position}
+              {entry.summary ? ` · ${entry.summary}` : ''}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

@@ -5,8 +5,11 @@ interface Props {
 }
 const { title = 'Rafael Lopez Castillo — Full-Stack Software Engineer', description = 'Full-stack software engineer building production systems in React, Node.js, and Go.' } = Astro.props;
 import '../../styles/global.css';
+import StarsBackdrop from '../atoms/StarsBackdrop.astro';
 import AnimatedBackground from '../atoms/AnimatedBackground.astro';
 import AnimationSwitcher from '../molecules/AnimationSwitcher.astro';
+import LanguageToggle from '../molecules/LanguageToggle.astro';
+import PlayPauseButton from '../atoms/PlayPauseButton.astro';
 ---
 <html lang="en">
 	<head>
@@ -16,10 +19,27 @@ import AnimationSwitcher from '../molecules/AnimationSwitcher.astro';
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<title>{title}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Playfair+Display:wght@400;500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+			rel="stylesheet"
+		/>
 	</head>
 	<body class="min-h-screen font-sans antialiased">
+		<StarsBackdrop />
 		<AnimatedBackground />
-		<slot />
-		<AnimationSwitcher />
+		<div class="fixed right-6 top-6 z-20 flex items-center gap-4">
+			<LanguageToggle />
+			<div class="flex items-start gap-2">
+				<AnimationSwitcher />
+				<PlayPauseButton />
+			</div>
+		</div>
+		<main class="relative z-[4] px-[8vw]">
+			<div class="mx-auto max-w-[1080px]">
+				<slot />
+			</div>
+		</main>
 	</body>
 </html>

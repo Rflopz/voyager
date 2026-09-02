@@ -1,6 +1,7 @@
 import type { BackgroundAnimation } from '../../domain/background-animation';
 import { StarfieldAnimation } from './starfield-animation';
 import { NebulaDriftAnimation } from './nebula-drift-animation';
+import { BlackholeAnimation } from './blackhole-animation';
 
 interface AnimationRegistryEntry {
   label: string;
@@ -22,6 +23,10 @@ export const animationRegistry = {
   'nebula-drift': {
     label: 'Nebula Drift',
     create: () => new NebulaDriftAnimation(),
+  },
+  blackhole: {
+    label: 'Blackhole',
+    create: () => new BlackholeAnimation(),
   },
 } satisfies Record<string, AnimationRegistryEntry>;
 

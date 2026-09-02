@@ -22,7 +22,6 @@ interface Blob {
  * the gear-icon settings panel (components/molecules/AnimationSettingsPanel).
  */
 export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAnimation {
-  private static readonly BG_COLOR = '#0b0e14';
   private static readonly BLOB_COLORS = [
     'rgba(108, 123, 209, 0.22)', // desaturated indigo
     'rgba(155, 127, 199, 0.18)', // muted violet
@@ -94,8 +93,7 @@ export class NebulaDriftAnimation implements BackgroundAnimation, ConfigurableAn
     const frame = () => {
       if (paused) return;
       tick += 1;
-      ctx.fillStyle = NebulaDriftAnimation.BG_COLOR;
-      ctx.fillRect(0, 0, width, height);
+      ctx.clearRect(0, 0, width, height);
 
       for (const blob of blobs) {
         if (!prefersReducedMotion) {

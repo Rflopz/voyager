@@ -1,21 +1,58 @@
 @import "tailwindcss";
 
 @theme {
-  /* Subtle space palette — muted, desaturated, no neon */
-  --color-space-bg: #0b0e14;       /* near-black navy, not pure black */
-  --color-space-surface: #131824;  /* card/panel background */
-  --color-space-border: #232b3d;
-  --color-space-text: #e4e7ee;     /* soft off-white, not pure white */
-  --color-space-muted: #9aa3b8;    /* lightened slightly from spec for WCAG AA contrast on bg */
-  --color-space-accent: #6c7bd1;   /* desaturated indigo / dusty blue */
-  --color-space-accent2: #9b7fc7;  /* muted violet, secondary accent */
+  /* Void palette — from the Rafael-landing-page template style guide.
+     Near-black, warm amber accent, no neon. */
+  --color-space-bg: #050506; /* void */
+  --color-space-surface: #0b0b0e; /* deep */
+  --color-space-border: rgba(255, 255, 255, 0.07); /* line */
+  --color-space-text: #ecebe7;
+  --color-space-muted: #8a8a85;
+  --color-space-accent: #e8a33d; /* amber */
+  --color-space-accent2: #ffd9a0; /* amber-hot */
 
-  --font-display: "Space Grotesk", sans-serif;
-  --font-sans: "Inter", sans-serif;
+  --font-display: "Instrument Serif", "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+html {
+  background: var(--color-space-bg);
 }
 
 body {
   background-color: var(--color-space-bg);
   color: var(--color-space-text);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-space-accent);
+  outline-offset: 4px;
+}
+
+::selection {
+  background: rgba(232, 163, 61, 0.22);
+  color: var(--color-space-text);
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.45;
+  }
 }
