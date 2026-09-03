@@ -1,0 +1,10 @@
+services:
+  voyager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: voyager:latest
+    container_name: voyager
+    restart: unless-stopped
+    ports:
+      - "8080:80"

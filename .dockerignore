@@ -1,0 +1,9 @@
+node_modules
+dist
+.git
+.github
+.astro
+*.md
+.env
+.vscode
+.dependency-cruiser.cjs

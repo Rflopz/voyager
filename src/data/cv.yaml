@@ -1,0 +1,135 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json
+cv:
+  name: Rafael Lopez Castillo
+  headline: Full-Stack Software Engineer
+  location: Remote (Sonora, Mexico)
+  email: rflopz.dev@gmail.com
+  photo:
+  phone: "+52 662 419 2084"
+  website: https://rflopz.com/
+  social_networks:
+    - network: LinkedIn
+      username: rflopz
+    - network: GitHub
+      username: Rflopz
+  custom_connections:
+  sections:
+    summary:
+      - Full-stack software engineer with 10+ years across React, Vue, Node.js (Express, NestJS), and more recently Go. Proven track record delivering high-impact features in multi-tenant, event-driven production systems (RabbitMQ, Elasticsearch, TypeORM) and working with AWS (Lambda, Cognito, CloudWatch, S3, SQS). Currently expanding into AI-driven development (agentic workflows, n8n, architecture design) while actively shipping production code. Strong foundation in clean, tested, maintainable code.
+    experience:
+      - company: SSO AI Agency
+        position: Software Engineer
+        date:
+        start_date: 2026-02
+        end_date: present
+        location: Remote (Sonora, Mexico)
+        summary: 'React, Go, AWS, Kubernetes'
+        highlights:
+          - Develop and maintain production features using React on the frontend and Go on the backend
+          - Work with AWS services (Lambda, Cognito, CloudWatch, S3, SQS) to support application infrastructure, async processing, and monitoring
+          - Reverse-engineered and completed a third-party (Finch) API integration with an incomplete sandbox; built out the sandbox for testing/QA and resolved data-import issues
+          - Authored the unit testing strategy across 3 production platforms (Go backend API, React provider app, React client app), raising coverage from 0% to ~75%
+          - Completed and deployed, alongside the DevOps team, an internal data/accessibility platform built with React and a Go backend proxy
+          - Used AI-assisted engineering tools (Hermes, Claude code)
+      - company: XIPE (RTA Fleet)
+        position: Software Engineer
+        date:
+        start_date: 2024-02
+        end_date: 2026-02
+        location: Hermosillo, Sonora, Mexico (Hybrid)
+        summary: 'Vue.js, TypeScript, NestJS'
+        highlights:
+          - Delivered 40+ high-impact features migrating a legacy system to a modern web app, in close collaboration with QA, product, and UI/UX
+          - Architected functionality using Vue.js (class components), TypeScript, and Vuetify on the frontend, paired with a NestJS backend using TypeORM, Elasticsearch, and RabbitMQ
+          - Collaborated in Agile sprints on a multi-tenant structure with feature-flag driven development and role-based permission management
+          - Used AI-assisted engineering tools (Devin.ai, CodeRabbitAI, Claude Code) as part of the development workflow for feature implementation and automated PR review
+      - company: 3Pillar Global
+        position: Senior Software Engineer
+        date:
+        start_date: 2022-06
+        end_date: 2024-01
+        location: Hermosillo, Sonora, Mexico (Remote)
+        summary: 'React.js, TypeScript, Zustand'
+        highlights:
+          - Transformed an outdated vanilla JavaScript system into a scalable web application using React.js, TypeScript, Zustand, and Material UI, across three successful iterations
+          - Designed and delivered a React training program for 15 coworkers over 2 months (hands-on coding challenges, code review practices)
+      - company: Earlier Experience
+        position: Software engineer / Web Developer
+        date:
+        start_date: 2015-11
+        end_date: 2022-05
+        location: Sonora, Mexico in office / remote
+        summary:
+        highlights:
+          - 'Wizeline (2021-2022): React/Redux + Ruby on Rails/MySQL — internal contractor pay-calculation tool'
+          - 'Interlogic Global (2019-2021): PHP/Yii2 multi-tenant apps, REST APIs, an async AWS Lambda reporting pipeline'
+          - 'Pacificsoft (2018-2019): ASP.NET/C#/Razor — took over and delivered a delayed project solo'
+          - 'Aseinti (2017-2018) & Sonora Tech Group (2015-2016): PHP/MySQL and C#/.NET foundational roles'
+    side_projects:
+      - name: '[Kaze](https://github.com/Rflopz/kaze)'
+        date:
+        start_date:
+        end_date:
+        location:
+        summary: AI-powered web agency platform — describe a feature in natural language, specialized AI agents implement it
+        highlights:
+          - Designed and built solo (Next.js/React + Python/FastAPI control plane, Docker-based isolated agent workspaces); heaviest vibe-coding project — I own architecture/product decisions, AI tools implement under my direction and review
+      - name: 'AllBlue'
+        date:
+        start_date:
+        end_date:
+        location:
+        summary: Meal planning, pantry tracking, and shopping lists across a Go API, Flutter mobile client, and Next.js web client
+        highlights:
+          - Single OpenAPI contract shared across web and mobile clients; clean-architecture Go backend with integration tests against real Postgres
+      - name: '[Ephizen-go](https://github.com/Rflopz/Ephizen-go)'
+        date:
+        start_date:
+        end_date:
+        location:
+        summary: From-scratch Go rewrite of a Python/FastAPI personal finance app
+        highlights:
+          - Built with strict TDD and Clean/Hexagonal/DDD boundaries, run in parallel against the legacy backend for endpoint-by-endpoint parity verification before cutover
+    education:
+      - institution: Universidad Tecnológica de Hermosillo
+        area: Information and Communication Technologies (ICT)
+        degree: BS
+        date:
+        start_date: 2012-09
+        end_date: 2017-06
+        location: Hermosillo, Sonora, Mexico
+        summary:
+        highlights:
+    skills:
+      - label: Frontend
+        details: React, Vue.js, JavaScript/TypeScript, Next.js, Redux, Zustand, Vuetify, Material-UI
+      - label: Backend
+        details: Node.js, Express, NestJS, Go, PHP, Python, Ruby on Rails
+      - label: Cloud & Infra
+        details: AWS Lambda, Cognito, CloudWatch, S3, SQS, Kubernetes, Docker
+      - label: Mobile
+        details: React Native, Flutter
+      - label: Architecture
+        details: Multi-tenant systems, event-driven architecture (RabbitMQ), microservices, REST APIs, Clean/Hexagonal/DDD, TDD
+      - label: Databases
+        details: MySQL, SQL Server, PostgreSQL, MongoDB, Elasticsearch, TypeORM
+      - label: Testing & Quality
+        details: Cypress, Jest, React Testing Library, PR reviews, pair programming
+      - label: AI & Automation
+        details: Hermes, Claude Code, graphify, n8n, AI agent workflows, Devin.ai, CodeRabbitAI
+      - label: Tools
+        details: Git, Docker, Jira, Neovim, Sentry
+    training_and_certifications:
+      - bullet: Advanced Security Awareness Training (2024-2025)
+      - bullet: React/Next.js Bootcamp (2021)
+      - bullet: Ruby on Rails Bootcamp (2020)
+design:
+  theme: engineeringresumes
+locale:
+  language: english
+settings:
+  current_date: today
+  render_command:
+    output_folder: rendercv_output
+  bold_keywords: []
+  pdf_title: Rafael Lopez Castillo - CV

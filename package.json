@@ -7,8 +7,6 @@
   },
   "scripts": {
     "sync-cv": "node scripts/sync-cv.mjs",
-    "predev": "npm run sync-cv",
-    "prebuild": "npm run sync-cv",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
