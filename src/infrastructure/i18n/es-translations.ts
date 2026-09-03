@@ -11,7 +11,7 @@ export const es: Translations = {
   navLinkedin: 'LINKEDIN',
   navEmail: 'CORREO',
   secAbout: 'SOBRE MÍ',
-  secWork: 'TRABAJO SELECCIONADO',
+  secWork: 'PROYECTOS PERSONALES',
   secWriting: 'ESCRITOS',
   secExp: 'EXPERIENCIA',
   secContact: 'CONTACTO',

@@ -3,13 +3,29 @@ interface Props {
   title?: string;
   description?: string;
 }
-const { title = 'Rafael Lopez Castillo — Full-Stack Software Engineer', description = 'Full-stack software engineer building production systems in React, Node.js, and Go.' } = Astro.props;
+const {
+  title = 'Rafael Lopez Castillo — Full-Stack Software Engineer',
+  description = 'Full-stack software engineer building production systems in React, Node.js, and Go.',
+} = Astro.props;
 import '../../styles/global.css';
 import StarsBackdrop from '../atoms/StarsBackdrop.astro';
 import AnimatedBackground from '../atoms/AnimatedBackground.astro';
 import AnimationSwitcher from '../molecules/AnimationSwitcher.astro';
 import LanguageToggle from '../molecules/LanguageToggle.astro';
 import PlayPauseButton from '../atoms/PlayPauseButton.astro';
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = new URL('/og-image.png', Astro.site);
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Rafael Lopez Castillo',
+  url: Astro.site?.toString(),
+  jobTitle: 'Full-Stack Software Engineer',
+  description,
+  sameAs: ['https://www.linkedin.com/in/rflopz', 'https://github.com/Rflopz'],
+};
 ---
 <html lang="en">
 	<head>
@@ -18,7 +34,26 @@ import PlayPauseButton from '../atoms/PlayPauseButton.astro';
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalURL} />
 		<title>{title}</title>
+
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImageURL} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:locale" content="en_US" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={canonicalURL} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImageURL} />
+
+		<script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link

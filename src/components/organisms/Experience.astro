@@ -22,20 +22,58 @@ const { experience } = Astro.props;
     >
       EXPERIENCE
     </h2>
-    <ul class="mt-11 flex max-w-[820px] flex-col gap-[18px] p-0" style="list-style: none;">
+    <div class="mt-14 flex flex-col">
       {
-        experience.map((entry) => (
-          <li class="grid grid-cols-[minmax(0,180px)_minmax(0,1fr)] gap-6">
-            <span class="font-mono text-[11px] leading-[1.9] tracking-[0.18em] text-space-muted opacity-60">
-              {formatYearRange(entry.start_date, entry.end_date)}
-            </span>
-            <p class="m-0 text-[15px] leading-[1.9] text-space-muted">
-              {entry.company} · {entry.position}
-              {entry.summary ? ` · ${entry.summary}` : ''}
-            </p>
-          </li>
-        ))
+        experience.map((entry, i) => {
+          const stack = entry.summary
+            ? entry.summary
+                .split(',')
+                .map((tech) => tech.trim())
+                .filter(Boolean)
+            : [];
+
+          return (
+            <article class="group relative -mx-[22px] grid grid-cols-[minmax(0,180px)_minmax(0,1fr)] gap-7 border-t border-space-border px-[22px] py-[38px] transition-colors duration-700 hover:bg-space-surface last:border-b">
+              <span
+                aria-hidden="true"
+                class="absolute -top-px left-0 h-px w-full origin-left scale-x-0 bg-space-accent transition-transform duration-500 group-hover:scale-x-100"
+              />
+              <div class="flex flex-col gap-[10px] font-mono text-[11px] uppercase tracking-[0.18em] text-space-muted">
+                {i === 0 && <span class="text-space-accent opacity-90">CURRENT</span>}
+                <span class="opacity-60">{formatYearRange(entry.start_date, entry.end_date)}</span>
+                {entry.location && <span class="opacity-40 normal-case tracking-normal">{entry.location}</span>}
+              </div>
+              <div class="transition-transform duration-700 group-hover:translate-x-[6px]">
+                <h3 class="m-0 font-display text-[24px] font-normal leading-[1.2] tracking-[-0.01em] text-space-text">
+                  {entry.company}
+                </h3>
+                <p class="m-0 mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-space-muted opacity-60">
+                  {entry.position}
+                </p>
+                {stack.length > 0 && (
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    {stack.map((tech) => (
+                      <span class="rounded-full border border-space-border px-[10px] py-[3px] font-mono text-[10px] uppercase tracking-[0.1em] text-space-muted">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {entry.highlights.length > 0 && (
+                  <ul class="mt-5 flex max-w-[62ch] flex-col gap-[10px] p-0" style="list-style: none;">
+                    {entry.highlights.map((highlight) => (
+                      <li class="flex gap-3 text-[15px] leading-[1.75] text-space-muted text-pretty">
+                        <span aria-hidden="true" class="mt-[10px] h-1 w-1 shrink-0 rounded-full bg-space-accent opacity-70" />
+                        {highlight}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </article>
+          );
+        })
       }
-    </ul>
+    </div>
   </div>
 </section>

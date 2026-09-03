@@ -44,7 +44,7 @@ export class YamlCvRepository implements CvRepository {
       social_networks: parsed.cv.social_networks ?? [],
       summary: parsed.cv.sections.summary ?? [],
       experience: parsed.cv.sections.experience,
-      projects: parsed.cv.sections.projects ?? [],
+      projects: parsed.cv.sections.side_projects ?? [],
       skills: parsed.cv.sections.skills ?? [],
     };
   }

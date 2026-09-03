@@ -7,11 +7,19 @@ import Experience from '../components/organisms/Experience.astro';
 import Contact from '../components/organisms/Contact.astro';
 import { cv } from '../config/cv-source';
 import { about } from '../data/site-content';
+
+// Featured side projects: Kaze (AI-agent product, full ownership) and
+// Ephizen-go (TDD/hexagonal rigor) tell the most complementary story.
+// Update this list, not cv.yaml, to change which projects are featured.
+const featuredProjectNames = ['Kaze', 'Ephizen-go'];
+const featuredProjects = cv.projects.filter((project) =>
+  featuredProjectNames.some((name) => project.name.includes(name))
+);
 ---
 <BaseLayout>
 	<Hero name={cv.name} headline={cv.headline} email={cv.email} socialNetworks={cv.social_networks} />
 	<About content={about} />
-	<SelectedWork projects={cv.projects} />
+	<SelectedWork projects={featuredProjects} />
 	{/* Writing section hidden until there's real published content — see src/components/organisms/Writing.astro and src/data/site-content.ts's writingArticles. Re-add <Writing articles={writingArticles} /> here when ready. */}
 	<Experience experience={cv.experience} />
 	<Contact email={cv.email} socialNetworks={cv.social_networks} />
