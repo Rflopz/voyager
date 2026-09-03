@@ -1,5 +1,11 @@
 name: Deploy
 
+# SECURITY: this repo is PUBLIC and this job runs on a SELF-HOSTED runner
+# (physical access to the Acer machine's docker socket). NEVER add a
+# `pull_request` or `pull_request_target` trigger here — a fork could open
+# a PR and have its workflow code execute directly on that machine
+# ("pwn request" attack). Only trusted, direct triggers (push to main by a
+# repo collaborator, or manual workflow_dispatch) are safe on this runner.
 on:
   push:
     branches: [main]
