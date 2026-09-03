@@ -10,7 +10,6 @@ export const es: Translations = {
   navGithub: 'GITHUB',
   navLinkedin: 'LINKEDIN',
   navEmail: 'CORREO',
-  navWriting: 'ESCRITOS',
   secAbout: 'SOBRE MÍ',
   secWork: 'TRABAJO SELECCIONADO',
   secWriting: 'ESCRITOS',
@@ -20,5 +19,6 @@ export const es: Translations = {
   personalProject: 'PROYECTO PERSONAL',
   viewProject: 'VER PROYECTO',
   writingEmpty: 'Aún no hay artículos publicados.',
+  scrollCue: 'DESPLÁZATE',
   footNote: 'CONSTRUIDO A MANO',
 };

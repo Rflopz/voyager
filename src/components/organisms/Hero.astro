@@ -56,18 +56,15 @@ const linkedin = findSocialUrl(socialNetworks, 'linkedin');
     >
       EMAIL
     </a>
-    <a
-      href="#writing"
-      data-i18n="navWriting"
-      class="border-b border-transparent pb-[3px] text-space-muted transition-colors duration-500 hover:border-space-accent hover:text-space-text"
-    >
-      WRITING
-    </a>
   </nav>
 
-  <div
-    aria-hidden="true"
-    class="absolute bottom-[6vh] left-0 h-10 w-px bg-space-text motion-safe:animate-[breathe_4200ms_cubic-bezier(.2,.7,.2,1)_infinite]"
-  >
+  <div aria-hidden="true" class="absolute bottom-[6vh] left-0 flex flex-col items-start gap-3">
+    <p data-i18n="scrollCue" class="font-mono text-[11px] uppercase tracking-[0.18em] text-space-muted opacity-60">
+      SCROLL
+    </p>
+    <div
+      class="h-10 w-px bg-space-text motion-safe:animate-[breathe_4200ms_cubic-bezier(.2,.7,.2,1)_infinite]"
+    >
+    </div>
   </div>
 </header>

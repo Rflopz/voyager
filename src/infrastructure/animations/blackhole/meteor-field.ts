@@ -78,8 +78,8 @@ export class MeteorField {
     const cx = params.centerX * asp;
     const cy = 1 - params.centerY;
     const gravity = 0.016 * s * s;
-    const captureRadius = 0.145 * s;
-    const horizonRadius = 0.042 * s;
+    const captureRadius = 0.18 * s;
+    const horizonRadius = 0.14 * s;
     ctx.globalCompositeOperation = 'lighter';
 
     for (let i = this.meteors.length - 1; i >= 0; i--) {
@@ -185,7 +185,7 @@ export class MeteorField {
     m.ang = Math.atan2(dy, dx);
     const angularMomentum = dx * m.vy - dy * m.vx;
     m.spin = angularMomentum < 0 ? -1 : 1;
-    m.L = Math.max(Math.abs(angularMomentum), 0.014 * scale);
+    m.L = Math.max(Math.abs(angularMomentum), 0.6 * scale);
   }
 
   /** Post-capture: spirals inward along its conserved angular momentum until it crosses the horizon, then fades. */
@@ -198,7 +198,7 @@ export class MeteorField {
     horizonRadius: number,
     scale: number
   ): void {
-    const angularVelocity = Math.min((m.L ?? 0) / ((m.r ?? 1) * (m.r ?? 1)), 22);
+    const angularVelocity = Math.min((m.L ?? 0) / ((m.r ?? 1) * (m.r ?? 10)), 22);
     m.ang = (m.ang ?? 0) + (m.spin ?? 1) * angularVelocity * dt;
     m.r = Math.max(horizonRadius * 0.55, (m.r ?? 0) - 0.04 * scale * Math.pow(captureRadius / (m.r ?? 1), 1.3) * dt);
     m.x = cx + Math.cos(m.ang) * m.r;
